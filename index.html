@@ -410,7 +410,7 @@
             <line x1="16" y1="13" x2="8" y2="13"></line>
             <line x1="16" y1="17" x2="8" y2="17"></line>
           </svg>
-          <span>Summary</span>
+          <span>Quote</span>
         </button>
       </div>
     </nav>
@@ -646,12 +646,94 @@
           </button>
         </div>
       </section>
+
+      <!-- Device-to-Device Data Transfer Section -->
+      <section class="glass-card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
+            Device Data Transfer
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+            Export your active quote, saved packages, and learned rates to transfer to another device.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+          <input
+            id="device-transfer-file-input"
+            type="file"
+            accept=".json,application/json"
+            onchange="handleImportDeviceData(event)"
+            class="hidden"
+          />
+          <button
+            type="button"
+            onclick="exportDeviceData()"
+            class="min-h-[40px] px-4 py-2 glass-btn-secondary text-xs font-bold text-slate-800 dark:text-neutral-100 inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Export Backup</span>
+          </button>
+
+          <button
+            type="button"
+            onclick="document.getElementById('device-transfer-file-input').click()"
+            class="min-h-[40px] px-4 py-2 glass-cta-primary text-slate-950 text-xs font-extrabold inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Import Data</span>
+          </button>
+        </div>
+      </section>
     </div>
 
     <!-- ===================================================================== -->
     <!-- PAGE 2: COST (3 SEPARATED SCOPE TABS)                                 -->
     <!-- ===================================================================== -->
     <div id="page-cost" class="hidden space-y-5">
+      <!-- Saved Package Selector Above Scope Tabs -->
+      <div class="glass-card p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 shrink-0">
+          <svg class="w-4 h-4 text-sky-600 dark:text-pastel-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <label for="saved-packages-select" class="text-xs font-extrabold text-slate-800 dark:text-white">
+            Load Saved Package
+          </label>
+        </div>
+
+        <div class="flex items-center gap-2 flex-1 sm:max-w-md">
+          <select
+            id="saved-packages-select"
+            onchange="applySelectedSavedPackage(this.value)"
+            class="w-full h-10 glass-input px-3 text-xs sm:text-sm font-semibold text-slate-800 dark:text-white focus:outline-none cursor-pointer"
+          >
+            <option value="">Select a saved package to pre-fill...</option>
+          </select>
+
+          <button
+            type="button"
+            id="delete-saved-package-btn"
+            onclick="deleteSelectedSavedPackage()"
+            title="Delete selected package"
+            aria-label="Delete selected package"
+            class="hidden h-10 px-3 glass-btn-secondary text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 text-xs font-bold shrink-0 cursor-pointer"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+
       <!-- Scope Tabs Bar: Production | Post Production | Miscellaneous -->
       <div class="glass-card p-1.5 grid grid-cols-3 gap-1.5">
         <button
@@ -702,7 +784,7 @@
           onclick="setActivePage('summary')"
           class="min-h-[42px] px-5 py-2 glass-cta-primary text-slate-950 text-xs sm:text-sm font-extrabold inline-flex items-center gap-2 cursor-pointer"
         >
-          <span>Next: Summary &amp; Quote</span>
+          <span>Next: Quote &amp; Pricing</span>
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
@@ -712,7 +794,7 @@
     </div>
 
     <!-- ===================================================================== -->
-    <!-- PAGE 3: SUMMARY, PRICING STRATEGY & CLIENT QUOTE ESTIMATE             -->
+    <!-- PAGE 3: QUOTE, PRICING STRATEGY & CLIENT QUOTE ESTIMATE               -->
     <!-- ===================================================================== -->
     <div id="page-summary" class="hidden space-y-5">
       <!-- 1. Cost & Margin Summary + Pricing Strategy -->
@@ -947,7 +1029,7 @@
         </div>
       </section>
 
-      <!-- 2. Client Quote Estimate (Borderless Title + Hero Totals + Generate Modal CTA) -->
+      <!-- 2. Client Quote Estimate (Borderless Title + Hero Totals + Generate Modal CTA + Save as Package) -->
       <section class="glass-hero p-5 sm:p-6 space-y-5">
         <div>
           <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
@@ -968,19 +1050,34 @@
             </div>
           </div>
 
-          <button
-            type="button"
-            onclick="openQuoteModal()"
-            class="w-full sm:w-auto min-h-[46px] px-6 py-2.5 glass-cta-primary text-slate-950 text-xs sm:text-sm font-extrabold inline-flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-            </svg>
-            <span>Preview &amp; Generate Quotation</span>
-          </button>
+          <div class="flex flex-col gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              onclick="openQuoteModal()"
+              class="w-full sm:w-auto min-h-[46px] px-6 py-2.5 glass-cta-primary text-slate-950 text-xs sm:text-sm font-extrabold inline-flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              <span>Preview &amp; Generate Quotation</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="openSavePackageModal()"
+              class="w-full sm:w-auto min-h-[40px] px-5 py-2 glass-btn-secondary text-slate-800 dark:text-neutral-100 text-xs font-bold inline-flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5 text-sky-600 dark:text-pastel-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span>Save as Package</span>
+            </button>
+          </div>
         </div>
 
         <!-- Profit & Margin Metrics -->
@@ -1100,7 +1197,7 @@
         <span>Cost</span>
       </button>
 
-      <!-- Page 3: Summary -->
+      <!-- Page 3: Quote -->
       <button
         type="button"
         id="nav-pill-summary"
@@ -1113,7 +1210,7 @@
           <line x1="16" y1="13" x2="8" y2="13"></line>
           <line x1="16" y1="17" x2="8" y2="17"></line>
         </svg>
-        <span>Summary</span>
+        <span>Quote</span>
       </button>
     </div>
   </nav>
@@ -1128,7 +1225,7 @@
   >
     <div class="w-full max-w-3xl glass-card overflow-hidden my-auto">
       <!-- Clean Top Modal Header -->
-      <div class="px-5 py-4 border-b border-white/50 dark:border-white/10 flex items-center justify-between gap-3">
+      <div class="px-5 py-4 border-b border-slate-200/70 dark:border-white/10 flex items-center justify-between gap-3">
         <div>
           <h3 class="text-base font-bold text-slate-900 dark:text-white">Client Quotation Preview</h3>
           <p class="text-xs text-slate-500 dark:text-neutral-400">Clean client-facing proposal ready to export</p>
@@ -1148,7 +1245,7 @@
       </div>
 
       <!-- Quote Display Options & Optional Logo Upload -->
-      <div class="px-5 py-3.5 bg-white/35 dark:bg-white/[0.02] border-b border-white/50 dark:border-white/10 space-y-3">
+      <div class="px-5 py-3.5 bg-slate-50/70 dark:bg-white/[0.02] border-b border-slate-200/70 dark:border-white/10 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2 text-xs">
             <span class="font-semibold text-slate-600 dark:text-neutral-300">Quotation Format:</span>
@@ -1215,11 +1312,9 @@
         </div>
 
         <!-- Optional Custom Logo Upload Row (JPG / PNG) -->
-        <div class="pt-2.5 border-t border-white/50 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
+        <div class="pt-2.5 border-t border-slate-200/70 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2.5 min-w-0">
-            <div id="custom-logo-thumb-wrap" class="hidden w-9 h-9 rounded-xl bg-white border border-white/80 dark:border-white/15 flex items-center justify-center overflow-hidden shrink-0">
-              <!-- Custom uploaded logo preview if set -->
-            </div>
+            <div id="custom-logo-thumb-wrap" class="hidden w-9 h-9 rounded-xl bg-white border border-slate-200 dark:border-white/15 flex items-center justify-center overflow-hidden shrink-0"></div>
             <div class="min-w-0">
               <div class="text-xs font-semibold text-slate-700 dark:text-neutral-200">Optional Quotation Logo</div>
               <div id="custom-logo-status" class="text-[11px] text-slate-500 dark:text-neutral-400 truncate">No logo uploaded &mdash; title only (stored locally)</div>
@@ -1230,27 +1325,22 @@
             <input
               id="quote-logo-input"
               type="file"
-              accept="image/jpeg,image/png,.jpg,.jpeg,.png"
+              accept="image/png,image/jpeg,image/webp"
               onchange="handleCustomLogoUpload(event)"
               class="hidden"
             />
             <button
               type="button"
               onclick="document.getElementById('quote-logo-input').click()"
-              class="h-9 px-3 glass-btn-secondary text-xs font-semibold text-slate-700 dark:text-neutral-200 inline-flex items-center gap-1.5 cursor-pointer"
+              class="h-8 px-3 glass-btn-secondary text-xs font-semibold text-slate-700 dark:text-neutral-200 cursor-pointer"
             >
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              Upload Logo (JPG / PNG)
+              Upload Logo
             </button>
             <button
               type="button"
               id="reset-custom-logo-btn"
               onclick="removeCustomLogo()"
-              class="hidden h-9 px-3 rounded-xl border border-rose-300/70 dark:border-rose-500/30 bg-rose-500/10 text-xs font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-500/20 transition cursor-pointer"
+              class="hidden h-8 px-2.5 rounded-xl text-rose-600 hover:bg-rose-500/10 text-xs font-semibold cursor-pointer"
             >
               Remove
             </button>
@@ -1258,39 +1348,115 @@
         </div>
       </div>
 
-      <!-- Printable / Exportable Client Document -->
-      <div class="p-4 sm:p-6 bg-slate-200/35 dark:bg-black/25">
-        <div id="client-quote-document" class="p-6 sm:p-8 bg-white text-slate-900 rounded-2xl border border-slate-200/80">
-          <!-- Dynamically populated by renderClientQuotePreview() -->
-        </div>
+      <!-- A4 Document Live Preview -->
+      <div class="p-4 sm:p-6 bg-slate-100/70 dark:bg-black/30 max-h-[65vh] overflow-y-auto">
+        <div id="client-quote-document" class="bg-white text-slate-900 rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8"></div>
       </div>
 
-      <!-- Clean Bottom Download Bar -->
-      <div class="px-5 py-4 border-t border-white/50 dark:border-white/10 bg-white/40 dark:bg-white/[0.02] flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5">
+      <!-- Bottom Modal Footer with Download Actions & Save as Package -->
+      <div class="px-5 py-4 border-t border-slate-200/70 dark:border-white/10 flex flex-wrap items-center justify-between gap-2.5">
         <button
           type="button"
-          onclick="downloadQuoteImage()"
-          class="w-full sm:w-auto min-h-[42px] px-4 py-2 glass-btn-secondary text-slate-800 dark:text-neutral-100 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 cursor-pointer"
+          onclick="openSavePackageModal()"
+          class="min-h-[42px] px-4 py-2 glass-btn-secondary text-slate-800 dark:text-neutral-100 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
         >
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
+          <svg class="w-4 h-4 text-sky-600 dark:text-pastel-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          Download Image (PNG)
+          <span>Save as Package</span>
         </button>
 
+        <div class="flex flex-wrap items-center justify-end gap-2.5 ml-auto">
+          <button
+            type="button"
+            onclick="downloadQuoteImage()"
+            class="min-h-[42px] px-4 py-2 glass-btn-secondary text-slate-800 dark:text-neutral-100 text-xs font-bold inline-flex items-center gap-2 cursor-pointer"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span>Download PNG</span>
+          </button>
+
+          <button
+            type="button"
+            onclick="downloadQuotePDF()"
+            class="min-h-[42px] px-5 py-2 glass-cta-primary text-slate-950 text-xs font-extrabold inline-flex items-center gap-2 cursor-pointer"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Download PDF</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- SAVE AS PACKAGE MODAL                                                   -->
+  <!-- ======================================================================= -->
+  <div
+    id="save-package-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/55 backdrop-blur-md p-4 flex items-center justify-center"
+    onclick="if (event.target === this) closeSavePackageModal()"
+  >
+    <div class="w-full max-w-md glass-card p-6 space-y-4">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
+            Save Estimation as Package
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+            Reuse this cost breakdown &amp; pricing setup anytime on the Cost page.
+          </p>
+        </div>
         <button
           type="button"
-          onclick="downloadQuotePDF()"
-          class="w-full sm:w-auto min-h-[42px] px-5 py-2 glass-cta-primary text-slate-950 text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 cursor-pointer"
+          onclick="closeSavePackageModal()"
+          aria-label="Close save package modal"
+          class="w-8 h-8 rounded-full glass-btn-secondary text-slate-500 hover:text-rose-600 flex items-center justify-center cursor-pointer"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
-          Download PDF
+        </button>
+      </div>
+
+      <div>
+        <label for="save-package-name-input" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
+          Package Name
+        </label>
+        <input
+          id="save-package-name-input"
+          type="text"
+          placeholder="e.g. Half-Day Corporate Shoot (RM 1,000)"
+          onkeydown="if (event.key === 'Enter') confirmSavePackage()"
+          class="w-full h-11 glass-input px-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+        />
+      </div>
+
+      <div class="pt-1 flex items-center justify-end gap-2">
+        <button
+          type="button"
+          onclick="closeSavePackageModal()"
+          class="h-10 px-4 glass-btn-secondary text-slate-700 dark:text-neutral-200 font-bold text-xs cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onclick="confirmSavePackage()"
+          class="h-10 px-5 glass-cta-primary text-slate-950 font-extrabold text-xs cursor-pointer"
+        >
+          Save Package
         </button>
       </div>
     </div>
@@ -1662,6 +1828,72 @@
       GBP: { symbol: '£', label: 'GBP' }
     };
 
+    const CURRENCY_APPROX_FROM_MYR = {
+      MYR: 1,
+      USD: 0.22,
+      SGD: 0.30,
+      EUR: 0.21,
+      GBP: 0.18
+    };
+
+    // Built-In Malaysian Market Rates & Equipment Launch Prices
+    const BUILTIN_SMART_RATES = {
+      crew: [
+        { desc: 'Director', unit: 'day', rate: 1500 },
+        { desc: 'Director of Photography (DOP)', unit: 'day', rate: 1200 },
+        { desc: 'Camera Operator', unit: 'day', rate: 800 },
+        { desc: '1st Assistant Camera (Focus Puller)', unit: 'day', rate: 550 },
+        { desc: 'Gaffer / Lighting Director', unit: 'day', rate: 750 },
+        { desc: 'Best Boy / Lighting Assistant', unit: 'day', rate: 450 },
+        { desc: 'Sound Recordist / Boom Operator', unit: 'day', rate: 650 },
+        { desc: 'Drone Pilot (CAAM Licensed)', unit: 'day', rate: 1200 },
+        { desc: 'Photographer', unit: 'day', rate: 900 },
+        { desc: 'Production Assistant (PA)', unit: 'day', rate: 300 },
+        { desc: 'Makeup & Hair Artist (HMUA)', unit: 'day', rate: 600 }
+      ],
+      gear: [
+        { desc: 'Sony Alpha 7 IV (A74)', unit: 'owned', rate: 11499, qty: 1, lifespanYears: 4, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Sony Alpha a6700', unit: 'owned', rate: 7099, qty: 1, lifespanYears: 4, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Sony FE 20-70mm f/4 G', unit: 'owned', rate: 5399, qty: 1, lifespanYears: 5, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Sigma 70-200mm f/2.8 DG DN OS Sports', unit: 'owned', rate: 7483, qty: 1, lifespanYears: 5, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Tamron 11-20mm f/2.8 Di III-A RXD', unit: 'owned', rate: 3399, qty: 1, lifespanYears: 5, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Viltrox AF 85mm f/2.0 EVO FE', unit: 'owned', rate: 1099, qty: 1, lifespanYears: 5, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Viltrox AF 9mm f/2.8 Air E', unit: 'owned', rate: 799, qty: 1, lifespanYears: 5, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Sony NP-FZ100 Battery Pack', unit: 'owned', rate: 402, qty: 1, lifespanYears: 3, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Sony HVL-F60RM2 Wireless Flash', unit: 'owned', rate: 2099, qty: 1, lifespanYears: 4, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Panasonic Eneloop AA (4-Pack) + Charger', unit: 'owned', rate: 139, qty: 1, lifespanYears: 3, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'SanDisk Extreme PRO 256GB SDXC V30', unit: 'owned', rate: 370, qty: 1, lifespanYears: 3, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'ASUS ProArt Display PA329CRV 32" 4K', unit: 'owned', rate: 3441, qty: 1, lifespanYears: 5, estEvents: 36, eventPeriod: 'year' },
+        { desc: 'Logitech MX Master 3 / 3S', unit: 'owned', rate: 419, qty: 1, lifespanYears: 4, estEvents: 36, eventPeriod: 'year' },
+        { desc: 'Ulanzi & Coman Zero Y Carbon Fiber Tripod', unit: 'owned', rate: 1599, qty: 1, lifespanYears: 5, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Sony FX3 Cinema Line Body', unit: 'rent', rate: 350, qty: 1 },
+        { desc: 'DJI RS 4 Pro Gimbal Stabilizer', unit: 'rent', rate: 150, qty: 1 },
+        { desc: 'Aputure 300d II / 600d COB Light', unit: 'rent', rate: 200, qty: 1 }
+      ],
+      post: [
+        { desc: 'Video Editing (Montage / Corporate)', unit: 'project', rate: 1500 },
+        { desc: 'Color Grading (DaVinci Resolve)', unit: 'project', rate: 600 },
+        { desc: 'Motion Graphics & Kinetic Titles', unit: 'project', rate: 750 },
+        { desc: 'Sound Design & Audio Mixing', unit: 'project', rate: 450 },
+        { desc: 'Social Media Cutdowns (9:16 Reels)', unit: 'project', rate: 350 },
+        { desc: 'Photo Retouching & Color Culling', unit: 'hour', rate: 80 }
+      ],
+      software: [
+        { desc: 'Blackmagic DaVinci Resolve Studio', unit: 'onetime', rate: 1275, lifespanYears: 5, estEvents: 3, eventPeriod: 'month' },
+        { desc: 'Envato Elements Subscription', unit: 'subscription', billingCycle: 'year', rate: 890, estEvents: 3, eventPeriod: 'month' },
+        { desc: 'Adobe Creative Cloud All Apps', unit: 'subscription', billingCycle: 'month', rate: 265, estEvents: 4, eventPeriod: 'month' },
+        { desc: 'Frame.io Review & Collaboration', unit: 'subscription', billingCycle: 'month', rate: 75, estEvents: 4, eventPeriod: 'month' },
+        { desc: 'Artlist Max Music & SFX', unit: 'subscription', billingCycle: 'year', rate: 1350, estEvents: 3, eventPeriod: 'month' }
+      ],
+      travel: [
+        { desc: 'Transport & Mileage (Klang Valley)', unit: 'flat', rate: 120 },
+        { desc: 'Outstation Mileage (Per KM)', unit: 'unit', rate: 1.2 },
+        { desc: 'Crew Meals & Refreshments', unit: 'day', rate: 150 },
+        { desc: 'Location Permit / Studio Rental', unit: 'day', rate: 800 },
+        { desc: 'Hard Drive / SSD Deliverable', unit: 'flat', rate: 320 }
+      ]
+    };
+
     // Post Production placed before Software
     const CATEGORIES = [
       {
@@ -1736,96 +1968,241 @@
 
     const STORAGE_KEY = 'prodcalmy_calculator_v6';
     const LEARNED_RATES_KEY = 'prodcalmy_learned_rates_v1';
+    const SAVED_PACKAGES_KEY = 'prodcalmy_saved_packages_v1';
 
-    // Curated Malaysian (MYR) Production Rate & Gear Database
-    const BUILTIN_SMART_RATES = {
-      crew: [
-        { desc: 'Director', unit: 'day', rate: 1800, qty: 1 },
-        { desc: 'Director of Photography (DOP)', unit: 'day', rate: 1500, qty: 1 },
-        { desc: 'Camera Operator', unit: 'day', rate: 800, qty: 1 },
-        { desc: '1st Assistant Camera (Focus Puller)', unit: 'day', rate: 650, qty: 1 },
-        { desc: 'Gaffer / Lighting Director', unit: 'day', rate: 750, qty: 1 },
-        { desc: 'Best Boy / Lighting Grip', unit: 'day', rate: 450, qty: 1 },
-        { desc: 'Sound Recordist / Boom Op', unit: 'day', rate: 650, qty: 1 },
-        { desc: 'Producer / Line Producer', unit: 'day', rate: 1200, qty: 1 },
-        { desc: 'Production Assistant (PA)', unit: 'day', rate: 300, qty: 1 },
-        { desc: 'Drone Pilot (CAAM Licensed)', unit: 'day', rate: 1200, qty: 1 },
-        { desc: 'Photographer (Event / Commercial)', unit: 'day', rate: 1200, qty: 1 },
-        { desc: 'Makeup & Hair Artist (HMUA)', unit: 'day', rate: 550, qty: 1 },
-        { desc: 'Art Director / Set Stylist', unit: 'day', rate: 900, qty: 1 },
-        { desc: 'Teleprompter Operator', unit: 'day', rate: 450, qty: 1 }
-      ],
-      gear: [
-        { desc: 'Sony FX3 Cinema Camera', unit: 'owned', rate: 17999, qty: 1, lifespanYears: 3, estEvents: 15, eventPeriod: 'year' },
-        { desc: 'Sony FX3 Cinema Camera (Rental)', unit: 'rent', rate: 350, qty: 1 },
-        { desc: 'Sony FX6 Cinema Camera', unit: 'owned', rate: 27999, qty: 1, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
-        { desc: 'Sony FX6 Cinema Camera (Rental)', unit: 'rent', rate: 550, qty: 1 },
-        { desc: 'Sony A7S III Body', unit: 'owned', rate: 15499, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Sony A7 IV Hybrid Body', unit: 'owned', rate: 10499, qty: 1, lifespanYears: 3, estEvents: 20, eventPeriod: 'year' },
-        { desc: 'Sony Alpha a6700 Body', unit: 'owned', rate: 7099, qty: 1, lifespanYears: 3, estEvents: 20, eventPeriod: 'year' },
-        { desc: 'Canon EOS C70 Cinema', unit: 'owned', rate: 22999, qty: 1, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
-        { desc: 'Canon EOS R5 C', unit: 'owned', rate: 18999, qty: 1, lifespanYears: 3, estEvents: 15, eventPeriod: 'year' },
-        { desc: 'RED Komodo 6K Package', unit: 'rent', rate: 950, qty: 1 },
-        { desc: 'ARRI Alexa Mini LF Package', unit: 'rent', rate: 2800, qty: 1 },
-        { desc: 'Blackmagic Pocket Cinema 6K Pro', unit: 'owned', rate: 11299, qty: 1, lifespanYears: 3, estEvents: 15, eventPeriod: 'year' },
-        { desc: 'Sony FE 20-70mm f/4 G', unit: 'owned', rate: 5399, qty: 1, lifespanYears: 4, estEvents: 20, eventPeriod: 'year' },
-        { desc: 'Sony FE 24-70mm f/2.8 GM II', unit: 'owned', rate: 9599, qty: 1, lifespanYears: 4, estEvents: 20, eventPeriod: 'year' },
-        { desc: 'Sony FE 70-200mm f/2.8 GM II', unit: 'owned', rate: 11499, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Sony FE 16-35mm f/2.8 GM II', unit: 'owned', rate: 9999, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Sigma 70-200mm f/2.8 DG DN Sports', unit: 'owned', rate: 7483, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Tamron 11-20mm f/2.8 Di III-A RXD', unit: 'owned', rate: 3399, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Viltrox AF 85mm f/2.0 EVO FE', unit: 'owned', rate: 1099, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Viltrox AF 9mm f/2.8 Air E', unit: 'owned', rate: 799, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'DJI RS 4 Pro Gimbal Combo', unit: 'owned', rate: 4599, qty: 1, lifespanYears: 3, estEvents: 20, eventPeriod: 'year' },
-        { desc: 'DJI Mavic 3 Pro Cine Drone', unit: 'owned', rate: 16999, qty: 1, lifespanYears: 3, estEvents: 12, eventPeriod: 'year' },
-        { desc: 'DJI Inspire 3 Cinema Drone', unit: 'rent', rate: 1800, qty: 1 },
-        { desc: 'Aputure LS 600d Pro COB Light', unit: 'owned', rate: 7990, qty: 1, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
-        { desc: 'Aputure Amaran 300c RGB Light', unit: 'owned', rate: 2699, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Nanlite Forza 300B II Kit', unit: 'owned', rate: 4199, qty: 1, lifespanYears: 3, estEvents: 16, eventPeriod: 'year' },
-        { desc: 'Sony HVL-F60RM2 Wireless Flash', unit: 'owned', rate: 2099, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'DJI Mic 2 Wireless Dual Kit', unit: 'owned', rate: 1549, qty: 1, lifespanYears: 3, estEvents: 24, eventPeriod: 'year' },
-        { desc: 'Rode Wireless PRO Dual System', unit: 'owned', rate: 1799, qty: 1, lifespanYears: 3, estEvents: 24, eventPeriod: 'year' },
-        { desc: 'Sennheiser MKH 416 Shotgun Mic', unit: 'owned', rate: 4699, qty: 1, lifespanYears: 5, estEvents: 20, eventPeriod: 'year' },
-        { desc: 'Atomos Ninja V+ 5" Monitor', unit: 'owned', rate: 2999, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Hollyland Mars 4K Wireless Video', unit: 'owned', rate: 2699, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Ulanzi & Coman Zero Y Carbon Tripod', unit: 'owned', rate: 1599, qty: 1, lifespanYears: 4, estEvents: 20, eventPeriod: 'year' },
-        { desc: 'ASUS ProArt PA329CRV 32" 4K Monitor', unit: 'owned', rate: 3441, qty: 1, lifespanYears: 4, estEvents: 24, eventPeriod: 'year' }
-      ],
-      post: [
-        { desc: 'Offline & Online Video Editing (Main Film)', unit: 'project', rate: 1500, qty: 1 },
-        { desc: 'Social Media Reels / TikTok Cutdowns', unit: 'project', rate: 450, qty: 1 },
-        { desc: 'Color Grading (DaVinci Resolve)', unit: 'project', rate: 800, qty: 1 },
-        { desc: 'Motion Graphics & 2D Title Animation', unit: 'project', rate: 900, qty: 1 },
-        { desc: 'Sound Design & Audio Mixing', unit: 'project', rate: 600, qty: 1 },
-        { desc: 'Photo Retouching & Color Culling', unit: 'project', rate: 500, qty: 1 },
-        { desc: 'Subtitles & Bilingual Captions (EN/BM)', unit: 'minute', rate: 35, qty: 1 },
-        { desc: 'Senior Video Editor (Hourly)', unit: 'hour', rate: 120, qty: 1 }
-      ],
-      software: [
-        { desc: 'Adobe Creative Cloud All Apps', unit: 'subscription', billingCycle: 'month', rate: 255, estEvents: 4, eventPeriod: 'month' },
-        { desc: 'DaVinci Resolve Studio License', unit: 'onetime', rate: 1390, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
-        { desc: 'Frame.io Pro Client Review', unit: 'subscription', billingCycle: 'month', rate: 68, estEvents: 4, eventPeriod: 'month' },
-        { desc: 'Epidemic Sound / Artlist Music License', unit: 'subscription', billingCycle: 'year', rate: 950, estEvents: 24, eventPeriod: 'year' },
-        { desc: 'CapCut Pro Commercial', unit: 'subscription', billingCycle: 'month', rate: 45, estEvents: 6, eventPeriod: 'month' },
-        { desc: 'Google Workspace / Cloud Storage 2TB', unit: 'subscription', billingCycle: 'month', rate: 43, estEvents: 4, eventPeriod: 'month' }
-      ],
-      travel: [
-        { desc: 'Mileage / Fuel Allowance (RM/km)', unit: 'unit', rate: 0.80, qty: 1 },
-        { desc: 'Toll & Parking Claims', unit: 'flat', rate: 60, qty: 1 },
-        { desc: 'Crew Meals & Craft Services', unit: 'day', rate: 180, qty: 1 },
-        { desc: 'Outstation Hotel Accommodation', unit: 'day', rate: 220, qty: 1 },
-        { desc: 'Studio / Location Rental Fee', unit: 'day', rate: 1200, qty: 1 },
-        { desc: 'Props & Wardrobe Sourcing', unit: 'flat', rate: 350, qty: 1 }
-      ]
-    };
+    function loadSavedPackages() {
+      try {
+        const raw = localStorage.getItem(SAVED_PACKAGES_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
 
-    const CURRENCY_APPROX_FROM_MYR = {
-      MYR: 1,
-      USD: 0.22,
-      SGD: 0.30,
-      EUR: 0.20,
-      GBP: 0.17
-    };
+    let savedPackagesStore = loadSavedPackages();
+    let selectedSavedPackageId = '';
+
+    function saveSavedPackages() {
+      try {
+        localStorage.setItem(SAVED_PACKAGES_KEY, JSON.stringify(savedPackagesStore));
+      } catch (e) {
+        console.warn('Unable to save packages:', e);
+      }
+    }
+
+    function openSavePackageModal() {
+      const modal = document.getElementById('save-package-modal');
+      const input = document.getElementById('save-package-name-input');
+      if (!modal || !input) return;
+      const defaultName = (state.meta.packageName || '').trim() || (state.meta.projectName || '').trim() || '';
+      input.value = defaultName;
+      modal.classList.remove('hidden');
+      setTimeout(() => input.focus(), 40);
+    }
+
+    function closeSavePackageModal() {
+      const modal = document.getElementById('save-package-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function confirmSavePackage() {
+      const input = document.getElementById('save-package-name-input');
+      const name = (input ? input.value : '').trim();
+      if (!name) {
+        showToast('Please enter a package name first.');
+        if (input) input.focus();
+        return;
+      }
+
+      const totals = calculateTotals();
+      const pkgEntry = {
+        id: 'pkg_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+        name,
+        currency: state.meta.currency || 'MYR',
+        estimatedTotal: totals.finalQuoteWithTax,
+        items: JSON.parse(JSON.stringify(state.items)),
+        pricing: JSON.parse(JSON.stringify(state.pricing)),
+        updatedAt: new Date().toISOString()
+      };
+
+      const existingIdx = savedPackagesStore.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+      if (existingIdx >= 0) {
+        pkgEntry.id = savedPackagesStore[existingIdx].id;
+        savedPackagesStore[existingIdx] = pkgEntry;
+      } else {
+        savedPackagesStore.unshift(pkgEntry);
+      }
+
+      selectedSavedPackageId = pkgEntry.id;
+      saveSavedPackages();
+      renderSavedPackagesDropdown();
+      closeSavePackageModal();
+      showToast(`Saved package "${name}"`);
+    }
+
+    function renderSavedPackagesDropdown() {
+      const selectEl = document.getElementById('saved-packages-select');
+      const delBtn = document.getElementById('delete-saved-package-btn');
+      if (!selectEl) return;
+
+      const optionsHtml = [
+        `<option value="">${savedPackagesStore.length > 0 ? 'Select a saved package to pre-fill...' : 'No saved packages yet (save one on Quote page)'}</option>`,
+        ...savedPackagesStore.map(pkg => {
+          const currSym = (CURRENCIES[pkg.currency] || CURRENCIES.MYR).symbol;
+          const totalLabel = Number.isFinite(pkg.estimatedTotal)
+            ? ` (${currSym} ${pkg.estimatedTotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })})`
+            : '';
+          return `<option value="${escapeHtml(pkg.id)}" ${pkg.id === selectedSavedPackageId ? 'selected' : ''}>${escapeHtml(pkg.name)}${totalLabel}</option>`;
+        })
+      ].join('');
+
+      selectEl.innerHTML = optionsHtml;
+      if (delBtn) {
+        delBtn.classList.toggle('hidden', !selectedSavedPackageId);
+      }
+    }
+
+    function applySelectedSavedPackage(pkgId) {
+      selectedSavedPackageId = pkgId || '';
+      const delBtn = document.getElementById('delete-saved-package-btn');
+      if (delBtn) {
+        delBtn.classList.toggle('hidden', !selectedSavedPackageId);
+      }
+      if (!pkgId) return;
+
+      const pkg = savedPackagesStore.find(p => p.id === pkgId);
+      if (!pkg) return;
+
+      lastBackupState = JSON.parse(JSON.stringify(state));
+
+      const clonedItems = createBlankCategoryItems();
+      CATEGORIES.forEach(cat => {
+        if (Array.isArray(pkg.items && pkg.items[cat.id]) && pkg.items[cat.id].length > 0) {
+          clonedItems[cat.id] = pkg.items[cat.id].map(item => ({
+            ...JSON.parse(JSON.stringify(item)),
+            id: uid()
+          }));
+        }
+      });
+
+      state.items = clonedItems;
+      if (pkg.pricing) {
+        state.pricing = { ...state.pricing, ...JSON.parse(JSON.stringify(pkg.pricing)) };
+      }
+      if (pkg.currency && CURRENCIES[pkg.currency]) {
+        state.meta.currency = pkg.currency;
+      }
+      state.meta.packageName = pkg.name;
+
+      saveState();
+      syncInputsFromState();
+      renderCategories();
+      updateSummaryUI();
+      showToast(`Loaded package "${pkg.name}"`, true);
+    }
+
+    function deleteSelectedSavedPackage() {
+      if (!selectedSavedPackageId) return;
+      const pkg = savedPackagesStore.find(p => p.id === selectedSavedPackageId);
+      savedPackagesStore = savedPackagesStore.filter(p => p.id !== selectedSavedPackageId);
+      selectedSavedPackageId = '';
+      saveSavedPackages();
+      renderSavedPackagesDropdown();
+      if (pkg) {
+        showToast(`Deleted package "${pkg.name}"`);
+      }
+    }
+
+    // =========================================================================
+    // DEVICE-TO-DEVICE DATA TRANSFER (EXPORT & IMPORT JSON BACKUP)
+    // =========================================================================
+    function exportDeviceData() {
+      try {
+        const backupPayload = {
+          app: 'ProdCalMY',
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          state,
+          savedPackages: savedPackagesStore,
+          learnedRates: learnedRatesStore
+        };
+        const jsonStr = JSON.stringify(backupPayload, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const dateStamp = new Date().toISOString().slice(0, 10);
+        triggerDownloadUrl(url, `ProdCalMY_Backup_${dateStamp}.json`);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast('Backup exported! Transfer this file to your other device.');
+      } catch (err) {
+        console.error('Export backup failed:', err);
+        showToast('Unable to export backup.');
+      }
+    }
+
+    function handleImportDeviceData(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const parsed = JSON.parse(e.target.result || '{}');
+          if (!parsed || parsed.app !== 'ProdCalMY' || !parsed.state) {
+            showToast('Invalid ProdCalMY backup file.');
+            event.target.value = '';
+            return;
+          }
+
+          lastBackupState = JSON.parse(JSON.stringify(state));
+          const def = createDefaultState();
+          const importedMeta = { ...def.meta, ...(parsed.state.meta || {}) };
+          importedMeta.shootDate = normalizeShootDateToDDMMYYYY(importedMeta.shootDate);
+
+          state = {
+            ...def,
+            ...parsed.state,
+            meta: importedMeta,
+            collapsed: { ...def.collapsed, ...(parsed.state.collapsed || {}) },
+            items: { ...def.items, ...(parsed.state.items || {}) },
+            pricing: { ...def.pricing, ...(parsed.state.pricing || {}) }
+          };
+          saveState();
+
+          if (Array.isArray(parsed.savedPackages)) {
+            const mergedMap = new Map();
+            savedPackagesStore.forEach(p => mergedMap.set(p.name.toLowerCase(), p));
+            parsed.savedPackages.forEach(p => {
+              if (p && p.name) mergedMap.set(p.name.toLowerCase(), p);
+            });
+            savedPackagesStore = Array.from(mergedMap.values());
+            saveSavedPackages();
+          }
+
+          if (parsed.learnedRates && typeof parsed.learnedRates === 'object') {
+            Object.keys(parsed.learnedRates).forEach(catId => {
+              if (!learnedRatesStore[catId]) learnedRatesStore[catId] = {};
+              Object.assign(learnedRatesStore[catId], parsed.learnedRates[catId]);
+            });
+            saveLearnedRates();
+          }
+
+          selectedSavedPackageId = '';
+          syncInputsFromState();
+          renderSavedPackagesDropdown();
+          renderCategories();
+          updateSummaryUI();
+          showToast('Device data restored successfully!', true);
+        } catch (err) {
+          console.error('Import backup failed:', err);
+          showToast('Could not read backup file.');
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
 
     function loadLearnedRates() {
       try {
@@ -3521,6 +3898,7 @@
       if (event.key === 'Escape') {
         closeShootDatePopover();
         closeQuoteModal();
+        closeSavePackageModal();
         closePWAGuideModal();
       }
     });
@@ -4261,6 +4639,7 @@
       applyExactBrandLogos();
       setupPWAManifestAndWorker();
       syncInputsFromState();
+      renderSavedPackagesDropdown();
       setCostScopeTab(activeCostTab);
       setActivePage('home');
       updateSummaryUI();
