@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ProdCalMY — Production Cost & Client Quote Estimator</title>
 
   <!-- Favicon & PWA Meta Tags -->
@@ -307,6 +307,20 @@
     input[type="number"] {
       -moz-appearance: textfield;
     }
+
+    /* Prevent mobile browser auto-zoom when focusing inputs & selects */
+    @media (max-width: 768px) {
+      input[type="text"],
+      input[type="number"],
+      input[type="search"],
+      input[type="email"],
+      input[type="tel"],
+      input[type="url"],
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
   </style>
 </head>
 <body class="apple-glass-canvas text-slate-900 dark:text-neutral-100 font-sans antialiased selection:bg-pastel-200 selection:text-slate-900 dark:selection:bg-pastel-400/30 dark:selection:text-white transition-colors duration-300 min-h-screen flex flex-col">
@@ -561,12 +575,12 @@
     <div id="page-cost" class="hidden space-y-5">
       <!-- Scope Tabs Bar -->
       <div class="glass-card p-1.5">
-        <div role="tablist" aria-label="Cost Scope Tabs" class="grid grid-cols-3 gap-1.5">
+        <div role="tablist" aria-label="Cost Scope Tabs" class="grid grid-cols-3 gap-1">
           <button
             type="button"
             id="cost-tab-production"
             onclick="setCostScopeTab('production')"
-            class="min-h-[40px] px-2.5 py-2 text-xs sm:text-sm font-bold rounded-2xl transition-all cursor-pointer truncate"
+            class="min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer"
           >
             Production
           </button>
@@ -574,7 +588,7 @@
             type="button"
             id="cost-tab-post"
             onclick="setCostScopeTab('post')"
-            class="min-h-[40px] px-2.5 py-2 text-xs sm:text-sm font-bold rounded-2xl transition-all cursor-pointer truncate"
+            class="min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer"
           >
             Post Production
           </button>
@@ -582,7 +596,7 @@
             type="button"
             id="cost-tab-misc"
             onclick="setCostScopeTab('misc')"
-            class="min-h-[40px] px-2.5 py-2 text-xs sm:text-sm font-bold rounded-2xl transition-all cursor-pointer truncate"
+            class="min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer"
           >
             Miscellaneous
           </button>
@@ -1616,6 +1630,268 @@
     ];
 
     const STORAGE_KEY = 'prodcalmy_calculator_v6';
+    const LEARNED_RATES_KEY = 'prodcalmy_learned_rates_v1';
+
+    // Curated Malaysian (MYR) Production Rate & Gear Database (#1)
+    const BUILTIN_SMART_RATES = {
+      crew: [
+        { desc: 'Director', unit: 'day', rate: 1800, qty: 1 },
+        { desc: 'Director of Photography (DOP)', unit: 'day', rate: 1500, qty: 1 },
+        { desc: 'Camera Operator', unit: 'day', rate: 800, qty: 1 },
+        { desc: '1st Assistant Camera (Focus Puller)', unit: 'day', rate: 650, qty: 1 },
+        { desc: 'Gaffer / Lighting Director', unit: 'day', rate: 750, qty: 1 },
+        { desc: 'Best Boy / Lighting Grip', unit: 'day', rate: 450, qty: 1 },
+        { desc: 'Sound Recordist / Boom Op', unit: 'day', rate: 650, qty: 1 },
+        { desc: 'Producer / Line Producer', unit: 'day', rate: 1200, qty: 1 },
+        { desc: 'Production Assistant (PA)', unit: 'day', rate: 300, qty: 1 },
+        { desc: 'Drone Pilot (CAAM Licensed)', unit: 'day', rate: 1200, qty: 1 },
+        { desc: 'Photographer (Event / Commercial)', unit: 'day', rate: 1200, qty: 1 },
+        { desc: 'Makeup & Hair Artist (HMUA)', unit: 'day', rate: 550, qty: 1 },
+        { desc: 'Art Director / Set Stylist', unit: 'day', rate: 900, qty: 1 },
+        { desc: 'Teleprompter Operator', unit: 'day', rate: 450, qty: 1 }
+      ],
+      gear: [
+        { desc: 'Sony FX3 Cinema Camera', unit: 'owned', rate: 17999, qty: 1, lifespanYears: 3, estEvents: 15, eventPeriod: 'year' },
+        { desc: 'Sony FX3 Cinema Camera (Rental)', unit: 'rent', rate: 350, qty: 1 },
+        { desc: 'Sony FX6 Cinema Camera', unit: 'owned', rate: 27999, qty: 1, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
+        { desc: 'Sony FX6 Cinema Camera (Rental)', unit: 'rent', rate: 550, qty: 1 },
+        { desc: 'Sony A7S III Body', unit: 'owned', rate: 15499, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'Sony A7 IV Hybrid Body', unit: 'owned', rate: 10499, qty: 1, lifespanYears: 3, estEvents: 20, eventPeriod: 'year' },
+        { desc: 'Canon EOS C70 Cinema', unit: 'owned', rate: 22999, qty: 1, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
+        { desc: 'Canon EOS R5 C', unit: 'owned', rate: 18999, qty: 1, lifespanYears: 3, estEvents: 15, eventPeriod: 'year' },
+        { desc: 'RED Komodo 6K Package', unit: 'rent', rate: 950, qty: 1 },
+        { desc: 'ARRI Alexa Mini LF Package', unit: 'rent', rate: 2800, qty: 1 },
+        { desc: 'Blackmagic Pocket Cinema 6K Pro', unit: 'owned', rate: 11299, qty: 1, lifespanYears: 3, estEvents: 15, eventPeriod: 'year' },
+        { desc: 'Sony FE 24-70mm f/2.8 GM II', unit: 'owned', rate: 9599, qty: 1, lifespanYears: 4, estEvents: 20, eventPeriod: 'year' },
+        { desc: 'Sony FE 70-200mm f/2.8 GM II', unit: 'owned', rate: 11499, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'Sony FE 16-35mm f/2.8 GM II', unit: 'owned', rate: 9999, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'DJI RS 4 Pro Gimbal Combo', unit: 'owned', rate: 4599, qty: 1, lifespanYears: 3, estEvents: 20, eventPeriod: 'year' },
+        { desc: 'DJI Mavic 3 Pro Cine Drone', unit: 'owned', rate: 16999, qty: 1, lifespanYears: 3, estEvents: 12, eventPeriod: 'year' },
+        { desc: 'DJI Inspire 3 Cinema Drone', unit: 'rent', rate: 1800, qty: 1 },
+        { desc: 'Aputure LS 600d Pro COB Light', unit: 'owned', rate: 7990, qty: 1, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
+        { desc: 'Aputure Amaran 300c RGB Light', unit: 'owned', rate: 2699, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'Nanlite Forza 300B II Kit', unit: 'owned', rate: 4199, qty: 1, lifespanYears: 3, estEvents: 16, eventPeriod: 'year' },
+        { desc: 'DJI Mic 2 Wireless Dual Kit', unit: 'owned', rate: 1549, qty: 1, lifespanYears: 3, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Rode Wireless PRO Dual System', unit: 'owned', rate: 1799, qty: 1, lifespanYears: 3, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'Sennheiser MKH 416 Shotgun Mic', unit: 'owned', rate: 4699, qty: 1, lifespanYears: 5, estEvents: 20, eventPeriod: 'year' },
+        { desc: 'Atomos Ninja V+ 5" Monitor', unit: 'owned', rate: 2999, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'Hollyland Mars 4K Wireless Video', unit: 'owned', rate: 2699, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' }
+      ],
+      post: [
+        { desc: 'Offline & Online Video Editing (Main Film)', unit: 'project', rate: 1500, qty: 1 },
+        { desc: 'Social Media Reels / TikTok Cutdowns', unit: 'project', rate: 450, qty: 1 },
+        { desc: 'Color Grading (DaVinci Resolve)', unit: 'project', rate: 800, qty: 1 },
+        { desc: 'Motion Graphics & 2D Title Animation', unit: 'project', rate: 900, qty: 1 },
+        { desc: 'Sound Design & Audio Mixing', unit: 'project', rate: 600, qty: 1 },
+        { desc: 'Photo Retouching & Color Culling', unit: 'project', rate: 500, qty: 1 },
+        { desc: 'Subtitles & Bilingual Captions (EN/BM)', unit: 'minute', rate: 35, qty: 1 },
+        { desc: 'Senior Video Editor (Hourly)', unit: 'hour', rate: 120, qty: 1 }
+      ],
+      software: [
+        { desc: 'Adobe Creative Cloud All Apps', unit: 'subscription', billingCycle: 'month', rate: 255, estEvents: 4, eventPeriod: 'month' },
+        { desc: 'DaVinci Resolve Studio License', unit: 'onetime', rate: 1390, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
+        { desc: 'Frame.io Pro Client Review', unit: 'subscription', billingCycle: 'month', rate: 68, estEvents: 4, eventPeriod: 'month' },
+        { desc: 'Epidemic Sound / Artlist Music License', unit: 'subscription', billingCycle: 'year', rate: 950, estEvents: 24, eventPeriod: 'year' },
+        { desc: 'CapCut Pro Commercial', unit: 'subscription', billingCycle: 'month', rate: 45, estEvents: 6, eventPeriod: 'month' },
+        { desc: 'Google Workspace / Cloud Storage 2TB', unit: 'subscription', billingCycle: 'month', rate: 43, estEvents: 4, eventPeriod: 'month' }
+      ],
+      travel: [
+        { desc: 'Mileage / Fuel Allowance (RM/km)', unit: 'unit', rate: 0.80, qty: 1 },
+        { desc: 'Toll & Parking Claims', unit: 'flat', rate: 60, qty: 1 },
+        { desc: 'Crew Meals & Craft Services', unit: 'day', rate: 180, qty: 1 },
+        { desc: 'Outstation Hotel Accommodation', unit: 'day', rate: 220, qty: 1 },
+        { desc: 'Studio / Location Rental Fee', unit: 'day', rate: 1200, qty: 1 },
+        { desc: 'Props & Wardrobe Sourcing', unit: 'flat', rate: 350, qty: 1 }
+      ]
+    };
+
+    const CURRENCY_APPROX_FROM_MYR = {
+      MYR: 1,
+      USD: 0.22,
+      SGD: 0.30,
+      EUR: 0.20,
+      GBP: 0.17
+    };
+
+    function loadLearnedRates() {
+      try {
+        const raw = localStorage.getItem(LEARNED_RATES_KEY);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    let learnedRatesStore = loadLearnedRates();
+
+    function saveLearnedRates() {
+      try {
+        localStorage.setItem(LEARNED_RATES_KEY, JSON.stringify(learnedRatesStore));
+      } catch (e) {
+        // Ignore storage quota issues
+      }
+    }
+
+    function recordLearnedRate(catId, item) {
+      if (!item) return;
+      const cleanDesc = String(item.desc || '').trim();
+      const numRate = parseFloat(item.rate);
+      if (cleanDesc.length < 2 || !Number.isFinite(numRate) || numRate <= 0) return;
+
+      if (!learnedRatesStore[catId]) learnedRatesStore[catId] = {};
+      const key = cleanDesc.toLowerCase();
+      learnedRatesStore[catId][key] = {
+        desc: cleanDesc,
+        unit: item.unit,
+        rate: numRate,
+        qty: item.qty || 1,
+        lifespanYears: item.lifespanYears || '',
+        estEvents: item.estEvents || '',
+        eventPeriod: item.eventPeriod || '',
+        billingCycle: item.billingCycle || '',
+        currency: state.meta.currency,
+        learned: true
+      };
+      saveLearnedRates();
+    }
+
+    function findSmartRateMatch(catId, queryText) {
+      const q = String(queryText || '').trim().toLowerCase();
+      if (q.length < 2) return null;
+
+      // 1. Prioritize user's own saved/learned entries (#2)
+      const learnedMap = learnedRatesStore[catId] || {};
+      const learnedList = Object.values(learnedMap);
+      let exactLearned = learnedList.find(entry => entry.desc.toLowerCase() === q);
+      if (exactLearned) {
+        return { ...exactLearned, sourceLabel: 'Your Saved Rate' };
+      }
+      let partialLearned = learnedList.find(entry => entry.desc.toLowerCase().includes(q));
+      if (partialLearned) {
+        return { ...partialLearned, sourceLabel: 'Your Saved Rate' };
+      }
+
+      // 2. Fallback to built-in Malaysian production library (#1)
+      const builtinList = BUILTIN_SMART_RATES[catId] || [];
+      let match = builtinList.find(entry => entry.desc.toLowerCase() === q)
+        || builtinList.find(entry => entry.desc.toLowerCase().startsWith(q))
+        || builtinList.find(entry => entry.desc.toLowerCase().includes(q));
+
+      if (!match) {
+        const tokens = q.split(/\s+/).filter(t => t.length >= 2);
+        if (tokens.length > 0) {
+          match = builtinList.find(entry => {
+            const target = entry.desc.toLowerCase();
+            return tokens.every(tok => target.includes(tok));
+          });
+        }
+      }
+
+      if (!match) return null;
+
+      const curr = state.meta.currency || 'MYR';
+      const factor = CURRENCY_APPROX_FROM_MYR[curr] || 1;
+      const convertedRate = curr === 'MYR'
+        ? match.rate
+        : Math.max(1, Math.round(match.rate * factor));
+
+      return {
+        ...match,
+        rate: convertedRate,
+        sourceLabel: curr === 'MYR' ? 'MY Market Rate' : `Est. ${curr} Rate`
+      };
+    }
+
+    function formatSmartSuggestionMeta(catId, match) {
+      if (!match) return '';
+      if (catId === 'gear') {
+        return match.unit === 'rent'
+          ? `${formatMoney(match.rate)} / rent`
+          : `${formatMoney(match.rate)} purchase (${match.lifespanYears || 3}yr, ${match.estEvents || 15}/${match.eventPeriod === 'month' ? 'mo' : 'yr'})`;
+      }
+      if (catId === 'software') {
+        return match.unit === 'onetime'
+          ? `${formatMoney(match.rate)} one-time`
+          : `${formatMoney(match.rate)} / ${match.billingCycle === 'year' ? 'yr' : 'mo'}`;
+      }
+      const unitNames = { day: '/ day', hour: '/ hr', minute: '/ min', project: '/ project', flat: 'flat', unit: '/ unit' };
+      return `${formatMoney(match.rate)} ${unitNames[match.unit] || ''}`.trim();
+    }
+
+    function updateSmartSuggestionSlot(catId, itemId) {
+      const slot = document.getElementById(`smart-suggest-${itemId}`);
+      if (!slot) return;
+      const list = state.items[catId] || [];
+      const item = list.find(i => i.id === itemId);
+      if (!item) return;
+
+      const match = findSmartRateMatch(catId, item.desc);
+      const currentRate = parseFloat(item.rate) || 0;
+      const isAlreadyApplied = match
+        && item.desc.trim().toLowerCase() === match.desc.toLowerCase()
+        && Math.abs(currentRate - match.rate) < 0.01;
+
+      if (!match || isAlreadyApplied) {
+        slot.classList.add('hidden');
+        slot.innerHTML = '';
+        return;
+      }
+
+      slot.classList.remove('hidden');
+      slot.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-sky-500/10 dark:bg-pastel-400/10 border border-sky-400/25 dark:border-pastel-400/20 text-[11px]">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="px-1.5 py-0.5 rounded-md bg-sky-500/15 dark:bg-pastel-400/20 font-bold text-[10px] text-sky-800 dark:text-pastel-200 shrink-0">
+              ${escapeHtml(match.sourceLabel)}
+            </span>
+            <span class="font-semibold text-slate-800 dark:text-neutral-200 truncate">
+              ${escapeHtml(match.desc)}
+            </span>
+            <span class="text-slate-500 dark:text-neutral-400 tabular-nums shrink-0">
+              &bull; ${formatSmartSuggestionMeta(catId, match)}
+            </span>
+          </div>
+          <button
+            type="button"
+            onclick="applySmartRateSuggestion('${catId}', '${itemId}')"
+            class="px-2.5 py-1 rounded-lg glass-cta-primary text-slate-950 font-extrabold text-[11px] shrink-0 cursor-pointer"
+          >
+            Apply Rate
+          </button>
+        </div>
+      `;
+    }
+
+    function applySmartRateSuggestion(catId, itemId) {
+      const list = state.items[catId] || [];
+      const item = list.find(i => i.id === itemId);
+      if (!item) return;
+
+      const match = findSmartRateMatch(catId, item.desc);
+      if (!match) return;
+
+      item.desc = match.desc;
+      if (match.unit) item.unit = match.unit;
+      item.rate = match.rate;
+      if (match.qty !== undefined && match.qty !== '') item.qty = match.qty;
+      if (catId === 'gear') {
+        if (match.lifespanYears) item.lifespanYears = match.lifespanYears;
+        if (match.estEvents) item.estEvents = match.estEvents;
+        if (match.eventPeriod) item.eventPeriod = match.eventPeriod;
+      } else if (catId === 'software') {
+        if (match.billingCycle) item.billingCycle = match.billingCycle;
+        if (match.lifespanYears) item.lifespanYears = match.lifespanYears;
+        if (match.estEvents) item.estEvents = match.estEvents;
+        if (match.eventPeriod) item.eventPeriod = match.eventPeriod;
+      }
+
+      saveState();
+      renderCategories();
+      updateSummaryUI();
+      showToast(`Applied ${match.desc} (${formatMoney(match.rate)})`);
+    }
 
     let activePage = 'home';
     let activeCostTab = 'production';
@@ -1661,7 +1937,7 @@
         const tabBtn = document.getElementById(`cost-tab-${t}`);
         if (!tabBtn) return;
         const isCurrent = t === activeCostTab;
-        tabBtn.className = `min-h-[40px] px-2.5 py-2 text-xs sm:text-sm font-bold rounded-2xl transition-all cursor-pointer truncate ${
+        tabBtn.className = `min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer ${
           isCurrent
             ? 'glass-pill-active font-extrabold'
             : 'text-slate-600 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white'
@@ -2255,6 +2531,9 @@
                   </button>
                 </div>
 
+                <!-- Smart Rate / Gear Price Suggestion Chip -->
+                <div id="smart-suggest-${item.id}" class="hidden"></div>
+
                 <!-- Bottom Sub-Row: Owned Amortization or Rent Parameters with Qty -->
                 ${isOwned ? `
                   <div class="grid grid-cols-12 gap-2 items-end pt-0.5">
@@ -2414,6 +2693,9 @@
                     </svg>
                   </button>
                 </div>
+
+                <!-- Smart Software Rate Suggestion Chip -->
+                <div id="smart-suggest-${item.id}" class="hidden"></div>
 
                 <!-- Bottom Sub-Row: Subscription or One-Time Purchase Parameters -->
                 ${isSubscription ? `
@@ -2611,6 +2893,9 @@
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
               </button>
+
+              <!-- Smart Rate Suggestion Chip -->
+              <div id="smart-suggest-${item.id}" class="hidden col-span-12 w-full"></div>
             </div>
           `;
         }).join('');
@@ -2688,743 +2973,12 @@
           </section>
         `;
       }).join('');
-    }
 
-    // =========================================================================
-    // 5. DOM RENDERING: SUMMARY, PRICING, DISCOUNT & COMPOSITION BAR
-    // =========================================================================
-    function updateSummaryUI() {
-      const t = calculateTotals();
-
-      document.getElementById('summary-crew').textContent = formatMoney(t.subtotals.crew);
-      document.getElementById('summary-gear').textContent = formatMoney(t.subtotals.gear);
-      document.getElementById('summary-post').textContent = formatMoney(t.subtotals.post);
-      document.getElementById('summary-software').textContent = formatMoney(t.subtotals.software);
-      document.getElementById('summary-travel').textContent = formatMoney(t.subtotals.travel);
-      document.getElementById('summary-base-cost').textContent = formatMoney(t.baseCost);
-      document.getElementById('summary-overhead-amount').textContent = `+ ${formatMoney(t.overheadAmount)}`;
-      document.getElementById('summary-total-cost').textContent = formatMoney(t.totalInternalCost);
-
-      // Discount UI readout
-      const discountAmtEl = document.getElementById('summary-discount-amount');
-      const discountNoteEl = document.getElementById('discount-status-note');
-      const discountBodyEl = document.getElementById('discount-controls-body');
-      if (discountAmtEl) {
-        discountAmtEl.textContent = `- ${formatMoney(t.discountAmount)}`;
-      }
-      if (discountNoteEl) {
-        discountNoteEl.textContent = t.discountEnabled
-          ? `Included on quotation (${t.discountPct}% off ${formatMoney(t.standardPreTaxQuote)})`
-          : 'Unchecked — excluded from client quotation';
-      }
-      if (discountBodyEl) {
-        discountBodyEl.classList.toggle('opacity-55', !t.discountEnabled);
-      }
-
-      // Hero Quote Display
-      document.getElementById('final-quote-total').textContent = formatMoney(t.finalQuoteWithTax);
-      const subtitleEl = document.getElementById('final-quote-subtitle');
-      if (state.pricing.taxEnabled && t.taxRate > 0) {
-        subtitleEl.textContent = `Includes ${t.taxRate}% Tax (${formatMoney(t.taxAmount)}) • Pre-tax ${formatMoney(t.preTaxQuote)}`;
-      } else {
-        subtitleEl.textContent = t.discountEnabled && t.discountAmount > 0
-          ? `Includes ${t.discountPct}% discount (-${formatMoney(t.discountAmount)}) • Pre-tax`
-          : `Excludes tax • Pre-tax subtotal ${formatMoney(t.preTaxQuote)}`;
-      }
-
-      document.getElementById('final-net-profit').textContent = formatMoney(t.netProfit);
-      document.getElementById('final-profit-margin').textContent = `${t.effectiveMarginPct.toFixed(1)}%`;
-      document.getElementById('final-markup-pct').textContent = `${t.effectiveMarkupPct.toFixed(1)}%`;
-
-      // Margin Health Plain Text (No Rounded Box)
-      const badge = document.getElementById('margin-health-badge');
-      badge.textContent = `${t.effectiveMarginPct.toFixed(1)}% Margin`;
-      if (t.preTaxQuote <= 0) {
-        badge.className = 'text-xs font-extrabold text-slate-500 dark:text-neutral-400';
-      } else if (t.effectiveMarginPct < 15) {
-        badge.className = 'text-xs font-extrabold text-rose-600 dark:text-rose-400';
-      } else if (t.effectiveMarginPct < 30) {
-        badge.className = 'text-xs font-extrabold text-amber-600 dark:text-amber-400';
-      } else {
-        badge.className = 'text-xs font-extrabold text-emerald-700 dark:text-emerald-400';
-      }
-
-      // Stacked Composition Bar
-      const totalBarDenom = Math.max(t.finalQuoteWithTax, t.totalInternalCost, 1);
-      const crewPct = (t.subtotals.crew / totalBarDenom) * 100;
-      const gearPct = (t.subtotals.gear / totalBarDenom) * 100;
-      const postPct = (t.subtotals.post / totalBarDenom) * 100;
-      const softwarePct = (t.subtotals.software / totalBarDenom) * 100;
-      const travelPct = (t.subtotals.travel / totalBarDenom) * 100;
-      const overheadBarPct = (t.overheadAmount / totalBarDenom) * 100;
-      const profitBarPct = Math.max(0, t.netProfit / totalBarDenom) * 100;
-      const taxBarPct = Math.max(0, t.taxAmount / totalBarDenom) * 100;
-
-      document.getElementById('bar-crew').style.width = `${crewPct}%`;
-      document.getElementById('bar-gear').style.width = `${gearPct}%`;
-      document.getElementById('bar-post').style.width = `${postPct}%`;
-      document.getElementById('bar-software').style.width = `${softwarePct}%`;
-      document.getElementById('bar-travel').style.width = `${travelPct}%`;
-      document.getElementById('bar-overhead').style.width = `${overheadBarPct}%`;
-      document.getElementById('bar-profit').style.width = `${profitBarPct}%`;
-      document.getElementById('bar-tax').style.width = `${taxBarPct}%`;
-
-      const legendTax = document.getElementById('legend-tax');
-      if (legendTax) {
-        legendTax.classList.toggle('hidden', !(state.pricing.taxEnabled && t.taxAmount > 0));
-      }
-
-      const costRatio = t.preTaxQuote > 0 ? Math.min(100, Math.round((t.totalInternalCost / t.preTaxQuote) * 100)) : 0;
-      const profitRatio = t.preTaxQuote > 0 ? Math.max(0, 100 - costRatio) : 0;
-      document.getElementById('composition-ratio-text').textContent = `Cost ${costRatio}% / Profit ${profitRatio}%`;
-    }
-
-    function syncControlsFromState() {
-      document.getElementById('project-name').value = state.meta.projectName;
-      document.getElementById('studio-brand-name').value = state.meta.brandName;
-      document.getElementById('client-name').value = state.meta.clientName;
-      document.getElementById('package-name').value = state.meta.packageName || '';
-      document.getElementById('shoot-date').value = normalizeShootDateToDDMMYYYY(state.meta.shootDate);
-      document.getElementById('quote-number').value = state.meta.quoteNumber;
-      document.getElementById('currency-select').value = state.meta.currency;
-      const ssmInputEl = document.getElementById('ssm-reg-no');
-      if (ssmInputEl) ssmInputEl.value = state.meta.ssmRegNo || '';
-      document.getElementById('studio-contact').value = state.meta.studioContact;
-      document.getElementById('quote-notes').value = state.meta.quoteNotes;
-
-      document.getElementById('overhead-input').value = state.pricing.overheadPct;
-      document.getElementById('overhead-slider').value = Math.min(50, state.pricing.overheadPct);
-
-      document.getElementById('profit-pct-input').value = state.pricing.profitPct;
-      document.getElementById('profit-pct-slider').value = Math.min(85, state.pricing.profitPct);
-      document.getElementById('profit-pct-label').textContent =
-        state.pricing.mode === 'markup' ? 'Markup Percentage (%)' : 'Target Profit Margin (%)';
-
-      // Discount Controls Sync
-      const discountToggle = document.getElementById('discount-toggle');
-      const discountInput = document.getElementById('discount-pct-input');
-      const discountSlider = document.getElementById('discount-pct-slider');
-      if (discountToggle) discountToggle.checked = Boolean(state.pricing.discountEnabled);
-      if (discountInput) discountInput.value = state.pricing.discountPct || 0;
-      if (discountSlider) discountSlider.value = Math.min(50, state.pricing.discountPct || 0);
-
-      // Pricing Mode Buttons
-      const markupBtn = document.getElementById('mode-markup-btn');
-      const marginBtn = document.getElementById('mode-margin-btn');
-      const activeModeClasses = 'glass-pill-active font-bold';
-      const inactiveModeClasses = 'text-slate-600 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white';
-      markupBtn.className = `px-3 py-1.5 text-xs transition-all cursor-pointer ${state.pricing.mode === 'markup' ? activeModeClasses : inactiveModeClasses}`;
-      marginBtn.className = `px-3 py-1.5 text-xs transition-all cursor-pointer ${state.pricing.mode === 'margin' ? activeModeClasses : inactiveModeClasses}`;
-
-      // Rounding Step Buttons
-      document.querySelectorAll('.round-btn').forEach(btn => {
-        const val = parseInt(btn.getAttribute('data-round'), 10);
-        const isActive = val === state.pricing.roundingStep;
-        btn.className = `round-btn px-2.5 py-1 text-xs transition cursor-pointer ${
-          isActive
-            ? 'glass-pill-active font-bold'
-            : 'text-slate-600 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white font-semibold'
-        }`;
-      });
-
-      // Tax Controls
-      document.getElementById('tax-toggle').checked = Boolean(state.pricing.taxEnabled);
-      document.getElementById('tax-rate-input').value = state.pricing.taxRate;
-
-      // Quote Style Buttons
-      const catBtn = document.getElementById('style-categorized-btn');
-      const pkgBtn = document.getElementById('style-package-btn');
-      catBtn.className = `px-3 py-1 text-xs transition cursor-pointer ${
-        state.pricing.quoteStyle === 'categorized'
-          ? 'glass-pill-active font-bold'
-          : 'text-slate-600 dark:text-neutral-300 font-semibold'
-      }`;
-      pkgBtn.className = `px-3 py-1 text-xs transition cursor-pointer ${
-        state.pricing.quoteStyle === 'package'
-          ? 'glass-pill-active font-bold'
-          : 'text-slate-600 dark:text-neutral-300 font-semibold'
-      }`;
-
-      syncCustomLogoUI();
-    }
-
-    // =========================================================================
-    // 6. CUSTOM QUOTATION LOGO UPLOAD (JPG / PNG)
-    // =========================================================================
-    function syncCustomLogoUI() {
-      const thumbWrap = document.getElementById('custom-logo-thumb-wrap');
-      const statusEl = document.getElementById('custom-logo-status');
-      const resetBtn = document.getElementById('reset-custom-logo-btn');
-      const hasCustom = Boolean(state.meta.customLogoDataUrl);
-
-      if (thumbWrap) {
-        if (hasCustom) {
-          thumbWrap.classList.remove('hidden');
-          thumbWrap.innerHTML = `<img src="${state.meta.customLogoDataUrl}" alt="Custom Studio Logo" class="w-full h-full object-contain p-1" />`;
-        } else {
-          thumbWrap.classList.add('hidden');
-          thumbWrap.innerHTML = '';
-        }
-      }
-
-      if (statusEl) {
-        statusEl.textContent = hasCustom
-          ? 'Custom studio logo active (stored locally only)'
-          : 'No logo uploaded — title only (stored locally)';
-      }
-
-      if (resetBtn) {
-        resetBtn.classList.toggle('hidden', !hasCustom);
-      }
-    }
-
-    function handleCustomLogoUpload(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-
-      if (!/^image\/(jpeg|jpg|png)$/i.test(file.type)) {
-        showToast('Please upload a JPG or PNG image.');
-        event.target.value = '';
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function (loadEvent) {
-        const img = new Image();
-        img.onload = function () {
-          const maxDim = 320;
-          let targetW = img.width;
-          let targetH = img.height;
-          if (targetW > maxDim || targetH > maxDim) {
-            if (targetW >= targetH) {
-              targetH = Math.round((targetH * maxDim) / targetW);
-              targetW = maxDim;
-            } else {
-              targetW = Math.round((targetW * maxDim) / targetH);
-              targetH = maxDim;
-            }
-          }
-
-          const canvas = document.createElement('canvas');
-          canvas.width = targetW;
-          canvas.height = targetH;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, targetW, targetH);
-
-          const resizedDataUrl = canvas.toDataURL('image/png');
-          state.meta.customLogoDataUrl = resizedDataUrl;
-          saveState();
-          syncCustomLogoUI();
-          renderClientQuotePreview();
-          showToast('Custom quotation logo updated.');
-        };
-        img.src = loadEvent.target.result;
-      };
-      reader.readAsDataURL(file);
-      event.target.value = '';
-    }
-
-    function removeCustomLogo() {
-      state.meta.customLogoDataUrl = '';
-      saveState();
-      syncCustomLogoUI();
-      renderClientQuotePreview();
-      showToast('Custom logo removed.');
-    }
-
-    // =========================================================================
-    // 7. STATE MUTATION HANDLERS
-    // =========================================================================
-    function updateMeta(key, value) {
-      state.meta[key] = value;
-      saveState();
-      if (!document.getElementById('quote-modal').classList.contains('hidden')) {
-        renderClientQuotePreview();
-      }
-    }
-
-    function updateCurrency(code) {
-      state.meta.currency = code;
-      saveState();
-      renderCategories();
-      updateSummaryUI();
-      if (!document.getElementById('quote-modal').classList.contains('hidden')) {
-        renderClientQuotePreview();
-      }
-    }
-
-    function toggleCategoryCollapse(catId) {
-      state.collapsed[catId] = !state.collapsed[catId];
-      saveState();
-      renderCategories();
-    }
-
-    function addLineItem(catId) {
-      if (!state.items[catId]) state.items[catId] = [];
-      const newId = uid();
-      let newItem;
-
-      if (catId === 'gear') {
-        newItem = {
-          id: newId,
-          desc: '',
-          unit: 'owned',
-          rate: '',
-          qty: '',
-          lifespanYears: '',
-          estEvents: '',
-          eventPeriod: 'year'
-        };
-      } else if (catId === 'software') {
-        newItem = {
-          id: newId,
-          desc: '',
-          unit: 'subscription',
-          billingCycle: 'month',
-          rate: '',
-          lifespanYears: '',
-          estEvents: '',
-          eventPeriod: 'month'
-        };
-      } else if (catId === 'post') {
-        newItem = {
-          id: newId,
-          desc: '',
-          unit: 'project',
-          rate: '',
-          qty: ''
-        };
-      } else if (catId === 'travel') {
-        newItem = {
-          id: newId,
-          desc: '',
-          unit: 'flat',
-          rate: '',
-          qty: ''
-        };
-      } else {
-        newItem = {
-          id: newId,
-          desc: '',
-          unit: 'day',
-          rate: '',
-          qty: ''
-        };
-      }
-
-      state.items[catId].push(newItem);
-      state.collapsed[catId] = false;
-      saveState();
-      renderCategories();
-      updateSummaryUI();
-    }
-
-    function updateLineItem(catId, itemId, field, value) {
-      const list = state.items[catId] || [];
-      const item = list.find(i => i.id === itemId);
-      if (!item) return;
-
-      item[field] = value;
-
-      const structuralFields = ['unit', 'billingCycle', 'eventPeriod'];
-      if (structuralFields.includes(field)) {
-        if (field === 'unit' && (value === 'flat' || (catId === 'post' && value === 'project'))) {
-          item.qty = 1;
-        }
-        saveState();
-        renderCategories();
-        updateSummaryUI();
-        return;
-      }
-
-      saveState();
-      updateLineRowDisplay(catId, itemId);
-      updateSummaryUI();
-    }
-
-    function removeLineItem(catId, itemId) {
-      const list = state.items[catId] || [];
-      if (list.length <= 1) {
-        if (catId === 'gear') {
-          state.items[catId] = [{
-            id: uid(),
-            desc: '',
-            unit: 'owned',
-            rate: '',
-            qty: '',
-            lifespanYears: '',
-            estEvents: '',
-            eventPeriod: 'year'
-          }];
-        } else if (catId === 'software') {
-          state.items[catId] = [{
-            id: uid(),
-            desc: '',
-            unit: 'subscription',
-            billingCycle: 'month',
-            rate: '',
-            lifespanYears: '',
-            estEvents: '',
-            eventPeriod: 'month'
-          }];
-        } else if (catId === 'post') {
-          state.items[catId] = [{ id: uid(), desc: '', unit: 'project', rate: '', qty: '' }];
-        } else if (catId === 'travel') {
-          state.items[catId] = [{ id: uid(), desc: '', unit: 'flat', rate: '', qty: '' }];
-        } else {
-          state.items[catId] = [{ id: uid(), desc: '', unit: 'day', rate: '', qty: '' }];
-        }
-      } else {
-        state.items[catId] = list.filter(i => i.id !== itemId);
-      }
-      saveState();
-      renderCategories();
-      updateSummaryUI();
-    }
-
-    function updatePricingSetting(key, value) {
-      let num = parseFloat(value);
-      if (Number.isNaN(num)) num = 0;
-      if (key === 'discountPct') {
-        num = Math.min(50, Math.max(0, num));
-      }
-      state.pricing[key] = num;
-      saveState();
-      syncControlsFromState();
-      updateSummaryUI();
-    }
-
-    function setPricingMode(mode) {
-      state.pricing.mode = mode;
-      if (mode === 'margin' && state.pricing.profitPct >= 90) {
-        state.pricing.profitPct = 40;
-      }
-      saveState();
-      syncControlsFromState();
-      updateSummaryUI();
-    }
-
-    function toggleDiscount(enabled) {
-      state.pricing.discountEnabled = enabled;
-      if (enabled && (!state.pricing.discountPct || state.pricing.discountPct <= 0)) {
-        state.pricing.discountPct = 10;
-      }
-      saveState();
-      syncControlsFromState();
-      updateSummaryUI();
-      if (!document.getElementById('quote-modal').classList.contains('hidden')) {
-        renderClientQuotePreview();
-      }
-    }
-
-    function setRoundingStep(step) {
-      state.pricing.roundingStep = step;
-      saveState();
-      syncControlsFromState();
-      updateSummaryUI();
-    }
-
-    function toggleTax(enabled) {
-      state.pricing.taxEnabled = enabled;
-      saveState();
-      updateSummaryUI();
-    }
-
-    function setQuoteStyle(style) {
-      state.pricing.quoteStyle = style;
-      saveState();
-      syncControlsFromState();
-      renderClientQuotePreview();
-    }
-
-    function clearProject() {
-      lastBackupState = JSON.parse(JSON.stringify(state));
-      state = createDefaultState();
-      saveState();
-      syncControlsFromState();
-      renderCategories();
-      updateSummaryUI();
-      showToast('Project cleared.', true);
-    }
-
-    function undoLastReset() {
-      if (!lastBackupState) return;
-      state = lastBackupState;
-      lastBackupState = null;
-      saveState();
-      syncControlsFromState();
-      renderCategories();
-      updateSummaryUI();
-      showToast('Previous project restored.');
-    }
-
-    // =========================================================================
-    // 8. CLIENT QUOTE PREVIEW & DETERMINISTIC A4 PDF / PNG RENDERER
-    // =========================================================================
-    function openQuoteModal() {
-      closeShootDatePopover();
-      syncControlsFromState();
-      renderClientQuotePreview();
-      document.getElementById('quote-modal').classList.remove('hidden');
-    }
-
-    function closeQuoteModal() {
-      document.getElementById('quote-modal').classList.add('hidden');
-    }
-
-    function getQuoteExportData() {
-      const t = calculateTotals();
-      const todayStr = new Date().toLocaleDateString('en-GB', {
-        day: '2-digit', month: 'short', year: 'numeric'
-      });
-
-      const shootDateDisplay = normalizeShootDateToDDMMYYYY(state.meta.shootDate) || 'To Be Confirmed';
-      const studioTitle = state.meta.brandName.trim() || 'Production Studio';
-      const ssmRegNo = (state.meta.ssmRegNo || '').trim();
-      const projectTitle = state.meta.projectName.trim() || 'Production Quotation';
-      const clientTitle = state.meta.clientName.trim() || 'Valued Client';
-      const packageTitle = state.meta.packageName.trim();
-      const quoteRef = state.meta.quoteNumber.trim() || 'Q-001';
-      const contactLine = state.meta.studioContact.trim() || 'Contact Studio for Enquiries';
-      const notesLine = state.meta.quoteNotes.trim();
-      const customLogoDataUrl = state.meta.customLogoDataUrl || '';
-
-      let rows = [];
-      if (state.pricing.quoteStyle === 'package') {
-        rows.push({
-          title: packageTitle || `${projectTitle} — All-Inclusive Production Package`,
-          amount: t.standardPreTaxQuote
+      // Refresh smart rate suggestion chips for visible items
+      visibleCategories.forEach(cat => {
+        (state.items[cat.id] || []).forEach(item => {
+          updateSmartSuggestionSlot(cat.id, item.id);
         });
-      } else {
-        const groupedSections = [
-          { title: 'Production', amount: t.clientGroups.production },
-          { title: 'Post-Production', amount: t.clientGroups.post },
-          { title: 'Production Logistics', amount: t.clientGroups.logistics }
-        ];
-        rows = groupedSections
-          .filter(sec => sec.amount > 0.005)
-          .map(sec => ({
-            title: sec.title,
-            amount: sec.amount
-          }));
-      }
-
-      return {
-        t,
-        todayStr,
-        shootDateDisplay,
-        studioTitle,
-        ssmRegNo,
-        projectTitle,
-        clientTitle,
-        packageTitle,
-        quoteRef,
-        contactLine,
-        notesLine,
-        customLogoDataUrl,
-        rows
-      };
-    }
-
-    function buildClientQuoteDocumentHTML() {
-      const data = getQuoteExportData();
-      const { t } = data;
-
-      const logoBlockHtml = data.customLogoDataUrl
-        ? `<div class="w-11 h-11 rounded-xl bg-white border border-sky-200/80 flex items-center justify-center overflow-hidden shrink-0">
-             <img src="${data.customLogoDataUrl}" alt="Studio Logo" class="w-full h-full object-contain p-1" />
-           </div>`
-        : '';
-
-      const ssmLineHtml = data.ssmRegNo
-        ? `<p class="text-[11px] font-semibold text-slate-600 mt-0.5">SSM Reg. No.: <span class="text-slate-800">${escapeHtml(data.ssmRegNo)}</span></p>`
-        : '';
-
-      let rowsHtml = '';
-      if (data.rows.length === 0) {
-        rowsHtml = `
-          <tr>
-            <td colspan="2" class="py-6 text-center text-sm text-slate-400">
-              No billable items entered yet. Add your production costs to generate a quote.
-            </td>
-          </tr>
-        `;
-      } else {
-        rowsHtml = data.rows.map(row => `
-          <tr class="border-b border-slate-100">
-            <td class="py-3.5 pr-4 align-middle">
-              <div class="font-bold text-slate-900 text-sm">${escapeHtml(row.title)}</div>
-            </td>
-            <td class="py-3.5 text-right align-middle font-bold text-slate-900 text-sm tabular-nums whitespace-nowrap">
-              ${formatMoney(row.amount)}
-            </td>
-          </tr>
-        `).join('');
-      }
-
-      return `
-        <div class="space-y-6 text-slate-900 bg-white">
-          <!-- Document Header -->
-          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b-2 border-slate-900">
-            <div class="flex items-start gap-3">
-              ${logoBlockHtml}
-              <div>
-                <h2 class="text-xl font-extrabold tracking-tight text-slate-900">
-                  ${escapeHtml(data.studioTitle)}
-                </h2>
-                ${ssmLineHtml}
-                <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(data.contactLine)}</p>
-              </div>
-            </div>
-
-            <div class="sm:text-right">
-              <span class="inline-block px-3 py-1 rounded-full bg-pastel-100 text-sky-900 text-xs font-extrabold uppercase tracking-wider">
-                Production Quotation
-              </span>
-              <p class="text-xs text-slate-500 mt-1.5">
-                Ref: <strong class="text-slate-800">${escapeHtml(data.quoteRef)}</strong>
-              </p>
-              <p class="text-xs text-slate-500">
-                Issued: ${data.todayStr} &bull; Valid for 14 days
-              </p>
-            </div>
-          </div>
-
-          <!-- Client & Shoot Info -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-pastel-50/70 rounded-xl p-4 border border-sky-200/70">
-            <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Prepared For</span>
-              <p class="text-sm font-bold text-slate-900 mt-0.5">${escapeHtml(data.clientTitle)}</p>
-              <p class="text-xs text-slate-600 mt-0.5">Project: ${escapeHtml(data.projectTitle)}</p>
-              ${data.packageTitle ? `<p class="text-xs font-semibold text-sky-800 mt-0.5">Package: ${escapeHtml(data.packageTitle)}</p>` : ''}
-            </div>
-            <div class="sm:text-right">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Scheduled Shoot Date</span>
-              <p class="text-sm font-bold text-slate-900 mt-0.5">${escapeHtml(data.shootDateDisplay)}</p>
-              <p class="text-xs text-slate-600 mt-0.5">Currency: ${escapeHtml(state.meta.currency)}</p>
-            </div>
-          </div>
-
-          <!-- Scope & Pricing Table -->
-          <table class="w-full border-collapse">
-            <thead>
-              <tr class="border-b border-slate-300 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                <th class="pb-2.5">Scope of Production &amp; Deliverables</th>
-                <th class="pb-2.5 text-right">Investment</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-          </table>
-
-          <!-- Totals Box -->
-          <div class="flex justify-end pt-2">
-            <div class="w-full sm:w-80 space-y-2 text-sm">
-              <div class="flex justify-between text-slate-600">
-                <span>${t.discountEnabled && t.discountAmount > 0 ? 'Subtotal' : 'Production Subtotal'}</span>
-                <span class="font-semibold tabular-nums">${formatMoney(t.standardPreTaxQuote)}</span>
-              </div>
-              ${t.discountEnabled && t.discountAmount > 0 ? `
-                <div class="flex justify-between text-rose-600">
-                  <span>Discount (${t.discountPct}%)</span>
-                  <span class="font-semibold tabular-nums">- ${formatMoney(t.discountAmount)}</span>
-                </div>
-                <div class="flex justify-between text-slate-700 font-semibold pt-1 border-t border-slate-100">
-                  <span>Subtotal After Discount</span>
-                  <span class="tabular-nums">${formatMoney(t.preTaxQuote)}</span>
-                </div>
-              ` : ''}
-              ${state.pricing.taxEnabled && t.taxRate > 0 ? `
-                <div class="flex justify-between text-slate-600">
-                  <span>Tax / SST (${t.taxRate}%)</span>
-                  <span class="font-semibold tabular-nums">${formatMoney(t.taxAmount)}</span>
-                </div>
-              ` : ''}
-              <div class="flex justify-between items-center pt-2.5 border-t-2 border-slate-900 text-base font-extrabold text-slate-900">
-                <span>Total Investment</span>
-                <span class="tabular-nums text-sky-900">${formatMoney(t.finalQuoteWithTax)}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Terms / Notes -->
-          ${data.notesLine ? `
-            <div class="pt-4 border-t border-slate-200 text-xs text-slate-500 leading-relaxed">
-              <strong class="text-slate-700">Terms &amp; Notes:</strong> ${escapeHtml(data.notesLine)}
-            </div>
-          ` : ''}
-        </div>
-      `;
-    }
-
-    function renderClientQuotePreview() {
-      const docEl = document.getElementById('client-quote-document');
-      if (!docEl) return;
-      docEl.innerHTML = buildClientQuoteDocumentHTML();
-    }
-
-    function getSanitizedQuoteFilename(ext) {
-      const rawName = (state.meta.projectName.trim() || state.meta.quoteNumber.trim() || 'ProdCalMY-Quotation')
-        .replace(/[^a-z0-9-_]+/gi, '-')
-        .replace(/^-+|-+$/g, '');
-      return `${rawName || 'ProdCalMY-Quotation'}.${ext}`;
-    }
-
-    function triggerDownloadUrl(dataUrl, filename) {
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function drawRoundedRect(ctx, x, y, w, h, r) {
-      const radius = Math.min(r, w / 2, h / 2);
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.lineTo(x + w - radius, y);
-      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
-      ctx.lineTo(x + w, y + h - radius);
-      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
-      ctx.lineTo(x + radius, y + h);
-      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
-      ctx.lineTo(x, y + radius);
-      ctx.quadraticCurveTo(x, y, x + radius, y);
-      ctx.closePath();
-    }
-
-    function wrapCanvasLines(ctx, text, maxWidth) {
-      const str = String(text || '').trim();
-      if (!str) return [];
-      const words = str.split(/\s+/);
-      const lines = [];
-      let current = '';
-
-      words.forEach(word => {
-        const candidate = current ? `${current} ${word}` : word;
-        if (ctx.measureText(candidate).width <= maxWidth) {
-          current = candidate;
-        } else {
-          if (current) lines.push(current);
-          current = word;
-        }
-      });
-      if (current) lines.push(current);
-      return lines;
-    }
-
-    function loadImageFromDataUrl(dataUrl) {
-      return new Promise(resolve => {
-        if (!dataUrl) {
-          resolve(null);
-          return;
-        }
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = () => resolve(null);
-        img.src = dataUrl;
       });
     }
 
@@ -3857,28 +3411,729 @@
         const undoBtn = document.createElement('button');
         undoBtn.type = 'button';
         undoBtn.textContent = 'Undo';
-        undoBtn.className = 'px-2.5 py-1 glass-cta-primary text-slate-950 font-bold text-[11px] transition cursor-pointer';
-        undoBtn.onclick = function () {
-          undoLastReset();
-          toast.remove();
+        undoBtn.className = 'px-2.5 py-1 rounded-lg glass-cta-primary text-slate-950 font-extrabold text-[11px] cursor-pointer';
+        undoBtn.onclick = () => {
+          if (lastBackupState) {
+            state = JSON.parse(JSON.stringify(lastBackupState));
+            lastBackupState = null;
+            saveState();
+            syncInputsFromState();
+            renderCategories();
+            updateSummaryUI();
+            toast.remove();
+            showToast('Previous project restored.');
+          }
         };
         toast.appendChild(undoBtn);
       }
 
       container.appendChild(toast);
-
       setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-1');
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(6px)';
         setTimeout(() => toast.remove(), 220);
-      }, includeUndo ? 5500 : 3000);
+      }, includeUndo ? 5000 : 2600);
+    }
+
+    // =========================================================================
+    // 5. CRUD & STATE MUTATION HANDLERS
+    // =========================================================================
+    function updateMeta(field, value) {
+      state.meta[field] = value;
+      saveState();
+      const modal = document.getElementById('quote-modal');
+      if (modal && !modal.classList.contains('hidden')) {
+        renderClientQuotePreview();
+      }
+    }
+
+    function updateCurrency(currCode) {
+      if (!CURRENCIES[currCode]) return;
+      state.meta.currency = currCode;
+      saveState();
+      renderCategories();
+      updateSummaryUI();
+      const modal = document.getElementById('quote-modal');
+      if (modal && !modal.classList.contains('hidden')) {
+        renderClientQuotePreview();
+      }
+    }
+
+    function clearProject() {
+      lastBackupState = JSON.parse(JSON.stringify(state));
+      const preservedCurrency = state.meta.currency || 'MYR';
+      const preservedBrand = state.meta.brandName || '';
+      const preservedSSM = state.meta.ssmRegNo || '';
+      const preservedContact = state.meta.studioContact || '';
+      const preservedLogo = state.meta.customLogoDataUrl || '';
+
+      state = createDefaultState();
+      state.meta.currency = preservedCurrency;
+      state.meta.brandName = preservedBrand;
+      state.meta.ssmRegNo = preservedSSM;
+      state.meta.studioContact = preservedContact;
+      state.meta.customLogoDataUrl = preservedLogo;
+
+      saveState();
+      syncInputsFromState();
+      renderCategories();
+      updateSummaryUI();
+      showToast('Project cleared to blank.', true);
+    }
+
+    function toggleCategoryCollapse(catId) {
+      state.collapsed[catId] = !state.collapsed[catId];
+      saveState();
+      renderCategories();
+    }
+
+    function addLineItem(catId) {
+      if (!state.items[catId]) state.items[catId] = [];
+      const cat = CATEGORIES.find(c => c.id === catId);
+      const defaultUnit = cat && cat.units[0] ? cat.units[0].value : 'flat';
+
+      const newItem = { id: uid(), desc: '', unit: defaultUnit, rate: '', qty: '' };
+      if (catId === 'gear') {
+        newItem.lifespanYears = '';
+        newItem.estEvents = '';
+        newItem.eventPeriod = 'year';
+      } else if (catId === 'software') {
+        newItem.billingCycle = 'month';
+        newItem.lifespanYears = '';
+        newItem.estEvents = '';
+        newItem.eventPeriod = 'month';
+      }
+
+      state.items[catId].push(newItem);
+      saveState();
+      renderCategories();
+      updateSummaryUI();
+    }
+
+    function removeLineItem(catId, itemId) {
+      const list = state.items[catId] || [];
+      if (list.length <= 1) {
+        const blank = createBlankCategoryItems()[catId];
+        state.items[catId] = blank;
+      } else {
+        state.items[catId] = list.filter(i => i.id !== itemId);
+      }
+      saveState();
+      renderCategories();
+      updateSummaryUI();
+    }
+
+    function updateLineItem(catId, itemId, field, value) {
+      const list = state.items[catId] || [];
+      const item = list.find(i => i.id === itemId);
+      if (!item) return;
+
+      item[field] = value;
+
+      // Auto-learn user's own item & rate whenever description and rate are filled
+      if (field === 'desc' || field === 'rate' || field === 'unit') {
+        recordLearnedRate(catId, item);
+      }
+
+      const structuralFields = ['unit', 'billingCycle', 'eventPeriod'];
+      if (structuralFields.includes(field)) {
+        if (field === 'unit' && (value === 'flat' || (catId === 'post' && value === 'project'))) {
+          item.qty = 1;
+        }
+        saveState();
+        renderCategories();
+        updateSummaryUI();
+        return;
+      }
+
+      saveState();
+      updateLineRowDisplay(catId, itemId);
+      if (field === 'desc' || field === 'rate') {
+        updateSmartSuggestionSlot(catId, itemId);
+      }
+      updateSummaryUI();
+    }
+
+    function updatePricingSetting(field, rawValue) {
+      let num = parseFloat(rawValue);
+      if (!Number.isFinite(num) || num < 0) num = 0;
+
+      if (field === 'overheadPct') {
+        num = Math.min(200, num);
+        state.pricing.overheadPct = num;
+        const slider = document.getElementById('overhead-slider');
+        const input = document.getElementById('overhead-input');
+        if (slider) slider.value = Math.min(50, num);
+        if (input && document.activeElement !== input) input.value = num;
+      } else if (field === 'profitPct') {
+        const maxVal = state.pricing.mode === 'margin' ? 95 : 500;
+        num = Math.min(maxVal, num);
+        state.pricing.profitPct = num;
+        const slider = document.getElementById('profit-pct-slider');
+        const input = document.getElementById('profit-pct-input');
+        if (slider) slider.value = Math.min(85, num);
+        if (input && document.activeElement !== input) input.value = num;
+      } else if (field === 'discountPct') {
+        num = Math.min(50, num);
+        state.pricing.discountPct = num;
+        if (num > 0 && !state.pricing.discountEnabled) {
+          state.pricing.discountEnabled = true;
+          const toggle = document.getElementById('discount-toggle');
+          if (toggle) toggle.checked = true;
+        }
+        const slider = document.getElementById('discount-pct-slider');
+        const input = document.getElementById('discount-pct-input');
+        if (slider) slider.value = num;
+        if (input && document.activeElement !== input) input.value = num;
+      } else if (field === 'taxRate') {
+        num = Math.min(50, num);
+        state.pricing.taxRate = num;
+        const input = document.getElementById('tax-rate-input');
+        if (input && document.activeElement !== input) input.value = num;
+      }
+
+      saveState();
+      updateSummaryUI();
+    }
+
+    function setPricingMode(mode) {
+      if (mode !== 'markup' && mode !== 'margin') return;
+      state.pricing.mode = mode;
+      if (mode === 'margin' && state.pricing.profitPct > 85) {
+        state.pricing.profitPct = 35;
+      }
+      saveState();
+      syncPricingControlsUI();
+      updateSummaryUI();
+    }
+
+    function toggleDiscount(enabled) {
+      state.pricing.discountEnabled = Boolean(enabled);
+      saveState();
+      syncPricingControlsUI();
+      updateSummaryUI();
+    }
+
+    function setRoundingStep(step) {
+      state.pricing.roundingStep = parseInt(step, 10) || 1;
+      saveState();
+      syncPricingControlsUI();
+      updateSummaryUI();
+    }
+
+    function toggleTax(enabled) {
+      state.pricing.taxEnabled = Boolean(enabled);
+      saveState();
+      syncPricingControlsUI();
+      updateSummaryUI();
+    }
+
+    function syncPricingControlsUI() {
+      const isMarkup = state.pricing.mode !== 'margin';
+      const markupBtn = document.getElementById('mode-markup-btn');
+      const marginBtn = document.getElementById('mode-margin-btn');
+      const profitLabel = document.getElementById('profit-pct-label');
+      const helperText = document.getElementById('mode-helper-text');
+
+      if (markupBtn && marginBtn) {
+        markupBtn.className = `px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+          isMarkup ? 'glass-pill-active' : 'text-slate-600 dark:text-neutral-300'
+        }`;
+        marginBtn.className = `px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+          !isMarkup ? 'glass-pill-active' : 'text-slate-600 dark:text-neutral-300'
+        }`;
+      }
+
+      if (profitLabel) {
+        profitLabel.textContent = isMarkup ? 'Markup Percentage (%)' : 'Target Margin (%)';
+      }
+      if (helperText) {
+        helperText.textContent = isMarkup ? 'Added on top of cost' : 'Share of final quote price';
+      }
+
+      const overheadSlider = document.getElementById('overhead-slider');
+      const overheadInput = document.getElementById('overhead-input');
+      if (overheadSlider) overheadSlider.value = Math.min(50, state.pricing.overheadPct);
+      if (overheadInput) overheadInput.value = state.pricing.overheadPct;
+
+      const profitSlider = document.getElementById('profit-pct-slider');
+      const profitInput = document.getElementById('profit-pct-input');
+      if (profitSlider) profitSlider.value = Math.min(85, state.pricing.profitPct);
+      if (profitInput) profitInput.value = state.pricing.profitPct;
+
+      const discountToggle = document.getElementById('discount-toggle');
+      const discountSlider = document.getElementById('discount-pct-slider');
+      const discountInput = document.getElementById('discount-pct-input');
+      const discountNote = document.getElementById('discount-status-note');
+      if (discountToggle) discountToggle.checked = Boolean(state.pricing.discountEnabled);
+      if (discountSlider) discountSlider.value = state.pricing.discountPct;
+      if (discountInput) discountInput.value = state.pricing.discountPct;
+      if (discountNote) {
+        discountNote.textContent = state.pricing.discountEnabled
+          ? `Active — ${state.pricing.discountPct}% discount deducted on client quotation`
+          : 'Unchecked — excluded from client quotation';
+      }
+
+      const activeStep = String(state.pricing.roundingStep || 1);
+      document.querySelectorAll('.round-btn').forEach(btn => {
+        const isSelected = btn.getAttribute('data-round') === activeStep;
+        btn.className = `round-btn px-2.5 py-1 font-semibold cursor-pointer ${
+          isSelected ? 'glass-pill-active font-bold' : 'text-slate-600 dark:text-neutral-300'
+        }`;
+      });
+
+      const taxToggle = document.getElementById('tax-toggle');
+      const taxRateInput = document.getElementById('tax-rate-input');
+      if (taxToggle) taxToggle.checked = Boolean(state.pricing.taxEnabled);
+      if (taxRateInput) {
+        taxRateInput.value = state.pricing.taxRate;
+        taxRateInput.disabled = !state.pricing.taxEnabled;
+        taxRateInput.classList.toggle('opacity-50', !state.pricing.taxEnabled);
+      }
+    }
+
+    function syncInputsFromState() {
+      const m = state.meta;
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || '';
+      };
+      setVal('project-name', m.projectName);
+      setVal('studio-brand-name', m.brandName);
+      setVal('client-name', m.clientName);
+      setVal('quote-number', m.quoteNumber);
+      setVal('package-name', m.packageName);
+      setVal('shoot-date', m.shootDate);
+      setVal('ssm-reg-no', m.ssmRegNo);
+      setVal('studio-contact', m.studioContact);
+      setVal('quote-notes', m.quoteNotes);
+
+      const currSelect = document.getElementById('currency-select');
+      if (currSelect) currSelect.value = m.currency || 'MYR';
+
+      updateCustomLogoControlUI();
+      syncPricingControlsUI();
+    }
+
+    // =========================================================================
+    // 6. SUMMARY & VISUAL COMPOSITION BAR UPDATER
+    // =========================================================================
+    function updateSummaryUI() {
+      const t = calculateTotals();
+
+      const setText = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      };
+
+      setText('summary-crew', formatMoney(t.subtotals.crew));
+      setText('summary-gear', formatMoney(t.subtotals.gear));
+      setText('summary-post', formatMoney(t.subtotals.post));
+      setText('summary-software', formatMoney(t.subtotals.software));
+      setText('summary-travel', formatMoney(t.subtotals.travel));
+      setText('summary-base-cost', formatMoney(t.baseCost));
+      setText('summary-overhead-amount', `+ ${formatMoney(t.overheadAmount)}`);
+      setText('summary-total-cost', formatMoney(t.totalInternalCost));
+      setText('summary-discount-amount', `- ${formatMoney(t.discountAmount)}`);
+
+      const marginBadge = document.getElementById('margin-health-badge');
+      if (marginBadge) {
+        const mPct = t.effectiveMarginPct;
+        marginBadge.textContent = `${mPct.toFixed(1)}% Margin`;
+        if (mPct < 15 && t.preTaxQuote > 0) {
+          marginBadge.className = 'text-xs font-extrabold text-rose-600 dark:text-rose-400';
+        } else if (mPct < 25 && t.preTaxQuote > 0) {
+          marginBadge.className = 'text-xs font-extrabold text-amber-600 dark:text-amber-400';
+        } else {
+          marginBadge.className = 'text-xs font-extrabold text-emerald-700 dark:text-emerald-400';
+        }
+      }
+
+      setText('final-quote-total', formatMoney(t.finalQuoteWithTax));
+      setText(
+        'final-quote-subtitle',
+        t.taxRate > 0
+          ? `Includes ${t.taxRate}% tax (${formatMoney(t.taxAmount)}) • Pre-tax ${formatMoney(t.preTaxQuote)}`
+          : `Excludes tax • Pre-tax subtotal ${formatMoney(t.preTaxQuote)}`
+      );
+
+      const netProfitEl = document.getElementById('final-net-profit');
+      if (netProfitEl) {
+        netProfitEl.textContent = formatMoney(t.netProfit);
+        netProfitEl.className = `mt-0.5 text-sm sm:text-base font-extrabold tabular-nums ${
+          t.netProfit < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'
+        }`;
+      }
+      setText('final-profit-margin', `${t.effectiveMarginPct.toFixed(1)}%`);
+      setText('final-markup-pct', `${t.effectiveMarkupPct.toFixed(1)}%`);
+
+      // Update Stacked Composition Bar
+      const denom = t.finalQuoteWithTax > 0 ? t.finalQuoteWithTax : 0;
+      const pct = (val) => (denom > 0 ? Math.max(0, (val / denom) * 100) : 0);
+
+      const setBar = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.style.width = `${pct(val).toFixed(2)}%`;
+      };
+
+      setBar('bar-crew', t.subtotals.crew);
+      setBar('bar-gear', t.subtotals.gear);
+      setBar('bar-post', t.subtotals.post);
+      setBar('bar-software', t.subtotals.software);
+      setBar('bar-travel', t.subtotals.travel);
+      setBar('bar-overhead', t.overheadAmount);
+      setBar('bar-profit', Math.max(0, t.netProfit));
+      setBar('bar-tax', t.taxAmount);
+
+      const legendTax = document.getElementById('legend-tax');
+      if (legendTax) {
+        legendTax.classList.toggle('hidden', !(t.taxRate > 0 && t.taxAmount > 0));
+      }
+
+      const costShare = denom > 0 ? Math.min(100, Math.round((t.totalInternalCost / denom) * 100)) : 0;
+      const profitShare = denom > 0 ? Math.max(0, Math.round((t.netProfit / denom) * 100)) : 0;
+      setText('composition-ratio-text', `Cost ${costShare}% / Profit ${profitShare}%`);
+    }
+
+    // =========================================================================
+    // 7. CLIENT QUOTATION MODAL, CUSTOM LOGO & PREVIEW RENDERER
+    // =========================================================================
+    function openQuoteModal() {
+      const modal = document.getElementById('quote-modal');
+      if (!modal) return;
+      syncQuoteStyleButtons();
+      updateCustomLogoControlUI();
+      renderClientQuotePreview();
+      modal.classList.remove('hidden');
+    }
+
+    function closeQuoteModal() {
+      const modal = document.getElementById('quote-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function setQuoteStyle(style) {
+      state.pricing.quoteStyle = style === 'package' ? 'package' : 'categorized';
+      saveState();
+      syncQuoteStyleButtons();
+      renderClientQuotePreview();
+    }
+
+    function syncQuoteStyleButtons() {
+      const isPackage = state.pricing.quoteStyle === 'package';
+      const catBtn = document.getElementById('style-categorized-btn');
+      const pkgBtn = document.getElementById('style-package-btn');
+      if (catBtn && pkgBtn) {
+        catBtn.className = `px-3 py-1 font-semibold transition cursor-pointer ${
+          !isPackage ? 'glass-pill-active font-bold' : 'text-slate-600 dark:text-neutral-300'
+        }`;
+        pkgBtn.className = `px-3 py-1 font-semibold transition cursor-pointer ${
+          isPackage ? 'glass-pill-active font-bold' : 'text-slate-600 dark:text-neutral-300'
+        }`;
+      }
+    }
+
+    function handleCustomLogoUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (file.size > 3 * 1024 * 1024) {
+        showToast('Please select an image smaller than 3MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        state.meta.customLogoDataUrl = e.target.result || '';
+        saveState();
+        updateCustomLogoControlUI();
+        renderClientQuotePreview();
+        showToast('Custom quotation logo applied.');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeCustomLogo() {
+      state.meta.customLogoDataUrl = '';
+      const fileInput = document.getElementById('quote-logo-input');
+      if (fileInput) fileInput.value = '';
+      saveState();
+      updateCustomLogoControlUI();
+      renderClientQuotePreview();
+      showToast('Custom logo removed.');
+    }
+
+    function updateCustomLogoControlUI() {
+      const thumbWrap = document.getElementById('custom-logo-thumb-wrap');
+      const statusEl = document.getElementById('custom-logo-status');
+      const resetBtn = document.getElementById('reset-custom-logo-btn');
+      const hasLogo = Boolean(state.meta.customLogoDataUrl);
+
+      if (thumbWrap) {
+        if (hasLogo) {
+          thumbWrap.classList.remove('hidden');
+          thumbWrap.innerHTML = `<img src="${state.meta.customLogoDataUrl}" alt="Studio Logo" class="w-full h-full object-contain p-0.5" />`;
+        } else {
+          thumbWrap.classList.add('hidden');
+          thumbWrap.innerHTML = '';
+        }
+      }
+      if (statusEl) {
+        statusEl.textContent = hasLogo
+          ? 'Custom studio logo active on quotation'
+          : 'No logo uploaded — title only (stored locally)';
+      }
+      if (resetBtn) {
+        resetBtn.classList.toggle('hidden', !hasLogo);
+      }
+    }
+
+    function getQuoteExportData() {
+      const t = calculateTotals();
+      const m = state.meta;
+      const isPackage = state.pricing.quoteStyle === 'package';
+
+      const studioTitle = (m.brandName || '').trim() || 'ProdCalMY Studio';
+      const ssmRegNo = (m.ssmRegNo || '').trim();
+      const contactLine = (m.studioContact || '').trim() || 'Production Proposal & Cost Estimate';
+      const clientTitle = (m.clientName || '').trim() || 'Valued Client';
+      const projectTitle = (m.projectName || '').trim() || 'Production Project';
+      const packageTitle = (m.packageName || '').trim();
+      const quoteRef = (m.quoteNumber || '').trim() || 'Q-001';
+      const shootDateDisplay = (m.shootDate || '').trim() || 'To Be Confirmed';
+      const todayStr = formatDateToDDMMYYYY(new Date());
+      const notesLine = (m.quoteNotes || '').trim();
+
+      let rows = [];
+      if (t.preTaxQuote > 0) {
+        if (isPackage) {
+          rows = [{
+            title: packageTitle || `${projectTitle} — Complete Production Package`,
+            amount: t.standardPreTaxQuote
+          }];
+        } else {
+          const groupDefs = [
+            { key: 'production', title: 'Production (Crew, Equipment & Software)' },
+            { key: 'post', title: 'Post-Production & Finishing' },
+            { key: 'logistics', title: 'Production Logistics & Expenses' }
+          ];
+          const scaleFactor = t.baseCost > 0 ? (t.standardPreTaxQuote / t.baseCost) : 0;
+          const rawGroups = {
+            production: t.subtotals.crew + t.subtotals.gear + t.subtotals.software,
+            post: t.subtotals.post,
+            logistics: t.subtotals.travel
+          };
+          rows = groupDefs
+            .filter(g => rawGroups[g.key] > 0)
+            .map(g => ({
+              title: g.title,
+              amount: rawGroups[g.key] * scaleFactor
+            }));
+        }
+      }
+
+      return {
+        t,
+        studioTitle,
+        ssmRegNo,
+        contactLine,
+        clientTitle,
+        projectTitle,
+        packageTitle,
+        quoteRef,
+        shootDateDisplay,
+        todayStr,
+        notesLine,
+        customLogoDataUrl: m.customLogoDataUrl || '',
+        rows
+      };
+    }
+
+    function renderClientQuotePreview() {
+      const container = document.getElementById('client-quote-document');
+      if (!container) return;
+
+      const data = getQuoteExportData();
+      const { t } = data;
+
+      const logoHtml = data.customLogoDataUrl
+        ? `<div class="w-12 h-12 rounded-xl border border-sky-200 bg-white flex items-center justify-center overflow-hidden shrink-0">
+             <img src="${data.customLogoDataUrl}" alt="Studio Logo" class="w-full h-full object-contain p-1" />
+           </div>`
+        : '';
+
+      const rowsHtml = data.rows.length === 0
+        ? `<tr><td colspan="2" class="py-8 text-center text-sm text-slate-400">No billable items entered yet.</td></tr>`
+        : data.rows.map(r => `
+            <tr class="border-b border-slate-100">
+              <td class="py-3.5 pr-4 text-sm font-bold text-slate-900">${escapeHtml(r.title)}</td>
+              <td class="py-3.5 text-right text-sm font-bold tabular-nums text-slate-900 whitespace-nowrap">${formatMoney(r.amount)}</td>
+            </tr>
+          `).join('');
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <!-- Header -->
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b-2 border-slate-900">
+            <div class="flex items-start gap-3.5">
+              ${logoHtml}
+              <div>
+                <h4 class="text-xl font-extrabold tracking-tight text-slate-900">${escapeHtml(data.studioTitle)}</h4>
+                ${data.ssmRegNo ? `<p class="text-xs font-semibold text-slate-600 mt-0.5">SSM Reg. No.: ${escapeHtml(data.ssmRegNo)}</p>` : ''}
+                <p class="text-xs font-medium text-slate-500 mt-0.5">${escapeHtml(data.contactLine)}</p>
+              </div>
+            </div>
+
+            <div class="sm:text-right space-y-1">
+              <span class="inline-block px-3 py-1 rounded-full bg-sky-100 text-sky-900 text-[10px] font-extrabold tracking-wider uppercase">
+                Production Quotation
+              </span>
+              <div class="text-xs text-slate-500 pt-1">
+                Ref: <strong class="text-slate-800">${escapeHtml(data.quoteRef)}</strong>
+              </div>
+              <div class="text-xs text-slate-500">
+                Issued: ${escapeHtml(data.todayStr)} &bull; Valid for 14 days
+              </div>
+            </div>
+          </div>
+
+          <!-- Client & Shoot Info Box -->
+          <div class="p-4 rounded-xl bg-sky-50/70 border border-sky-200/80 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-0.5">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Prepared For</div>
+              <div class="text-sm font-bold text-slate-900">${escapeHtml(data.clientTitle)}</div>
+              <div class="text-xs text-slate-600">Project: ${escapeHtml(data.projectTitle)}</div>
+              ${data.packageTitle ? `<div class="text-xs font-semibold text-sky-800">Package: ${escapeHtml(data.packageTitle)}</div>` : ''}
+            </div>
+
+            <div class="sm:text-right space-y-0.5">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Scheduled Shoot Date</div>
+              <div class="text-sm font-bold text-slate-900">${escapeHtml(data.shootDateDisplay)}</div>
+              <div class="text-xs text-slate-600">Currency: ${escapeHtml(state.meta.currency)}</div>
+            </div>
+          </div>
+
+          <!-- Scope & Pricing Table -->
+          <div>
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="border-b border-slate-300 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  <th class="pb-2.5 text-left">Scope of Production &amp; Deliverables</th>
+                  <th class="pb-2.5 text-right">Investment</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Totals Block -->
+          <div class="flex justify-end">
+            <div class="w-full sm:w-72 space-y-2 text-xs">
+              <div class="flex justify-between text-slate-600">
+                <span>${t.discountEnabled && t.discountAmount > 0 ? 'Subtotal' : 'Production Subtotal'}</span>
+                <span class="font-semibold tabular-nums text-slate-900">${formatMoney(t.standardPreTaxQuote)}</span>
+              </div>
+
+              ${t.discountEnabled && t.discountAmount > 0 ? `
+                <div class="flex justify-between text-rose-600">
+                  <span>Discount (${t.discountPct}%)</span>
+                  <span class="font-semibold tabular-nums">- ${formatMoney(t.discountAmount)}</span>
+                </div>
+                <div class="pt-1.5 border-t border-slate-100 flex justify-between font-semibold text-slate-700">
+                  <span>Subtotal After Discount</span>
+                  <span class="tabular-nums">${formatMoney(t.preTaxQuote)}</span>
+                </div>
+              ` : ''}
+
+              ${state.pricing.taxEnabled && t.taxRate > 0 ? `
+                <div class="flex justify-between text-slate-600">
+                  <span>Tax / SST (${t.taxRate}%)</span>
+                  <span class="font-semibold tabular-nums text-slate-900">${formatMoney(t.taxAmount)}</span>
+                </div>
+              ` : ''}
+
+              <div class="pt-2.5 border-t-2 border-slate-900 flex justify-between items-baseline text-base font-extrabold">
+                <span class="text-slate-900">Total Investment</span>
+                <span class="tabular-nums text-sky-900">${formatMoney(t.finalQuoteWithTax)}</span>
+              </div>
+            </div>
+          </div>
+
+          ${data.notesLine ? `
+            <div class="pt-4 border-t border-slate-200 text-xs text-slate-600">
+              <strong class="text-slate-800">Terms &amp; Notes:</strong> ${escapeHtml(data.notesLine)}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 8. CANVAS & PDF EXPORT HELPERS
+    // =========================================================================
+    function drawRoundedRect(ctx, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + width, y, x + width, y + height, r);
+      ctx.arcTo(x + width, y + height, x, y + height, r);
+      ctx.arcTo(x, y + height, x, y, r);
+      ctx.arcTo(x, y, x + width, y, r);
+      ctx.closePath();
+    }
+
+    function wrapCanvasLines(ctx, text, maxWidth) {
+      const words = String(text || '').split(/\s+/);
+      const lines = [];
+      let currentLine = '';
+
+      words.forEach(word => {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        if (ctx.measureText(testLine).width <= maxWidth) {
+          currentLine = testLine;
+        } else {
+          if (currentLine) lines.push(currentLine);
+          currentLine = word;
+        }
+      });
+      if (currentLine) lines.push(currentLine);
+      return lines.length ? lines : [''];
+    }
+
+    function loadImageFromDataUrl(dataUrl) {
+      return new Promise((resolve) => {
+        if (!dataUrl) {
+          resolve(null);
+          return;
+        }
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = dataUrl;
+      });
+    }
+
+    function getSanitizedQuoteFilename(ext) {
+      const ref = (state.meta.quoteNumber || 'Quotation').trim().replace(/[^a-zA-Z0-9_-]+/g, '_');
+      const proj = (state.meta.projectName || 'ProdCalMY').trim().replace(/[^a-zA-Z0-9_-]+/g, '_');
+      return `${ref}_${proj}.${ext}`;
+    }
+
+    function triggerDownloadUrl(url, filename) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
     function initApp() {
       applyExactBrandLogos();
       setupPWAManifestAndWorker();
-      syncControlsFromState();
+      syncInputsFromState();
       setCostScopeTab(activeCostTab);
-      setActivePage(activePage);
+      setActivePage('home');
       updateSummaryUI();
     }
 
