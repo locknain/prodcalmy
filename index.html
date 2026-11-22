@@ -343,13 +343,13 @@
         </p>
       </div>
 
-      <!-- PWA Install App Button -->
-      <div class="flex items-center gap-2 shrink-0">
+      <!-- PWA Install App Link (Mobile Only, Clean Blue Text) -->
+      <div class="flex md:hidden items-center gap-2 shrink-0">
         <button
           type="button"
           id="install-app-btn"
           onclick="triggerPWAInstall()"
-          class="min-h-[38px] px-3.5 py-1.5 glass-cta-primary text-slate-950 font-bold text-xs inline-flex items-center gap-1.5 cursor-pointer"
+          class="min-h-[36px] px-2 py-1 text-sky-600 dark:text-pastel-400 hover:text-sky-700 dark:hover:text-pastel-300 font-bold text-xs inline-flex items-center gap-1.5 transition-colors cursor-pointer"
         >
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
             <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
@@ -359,95 +359,169 @@
         </button>
       </div>
     </div>
+
+    <!-- Desktop Top Navigation Bar (Below Header) -->
+    <nav
+      aria-label="Desktop Navigation"
+      class="hidden md:block border-t border-slate-200/70 dark:border-white/10"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-6">
+        <button
+          type="button"
+          id="desktop-nav-home"
+          onclick="setActivePage('home')"
+          class="py-3 border-b-2 border-transparent inline-flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
+        >
+          <svg class="w-4 h-4 nav-icon-colored shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Home</span>
+        </button>
+
+        <button
+          type="button"
+          id="desktop-nav-cost"
+          onclick="setActivePage('cost')"
+          class="py-3 border-b-2 border-transparent inline-flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
+        >
+          <svg class="w-4 h-4 nav-icon-colored shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+            <line x1="8" y1="6" x2="16" y2="6"></line>
+            <line x1="8" y1="10" x2="10" y2="10"></line>
+            <line x1="14" y1="10" x2="16" y2="10"></line>
+            <line x1="8" y1="14" x2="10" y2="14"></line>
+            <line x1="14" y1="14" x2="16" y2="14"></line>
+            <line x1="8" y1="18" x2="10" y2="18"></line>
+            <line x1="14" y1="18" x2="16" y2="18"></line>
+          </svg>
+          <span>Cost</span>
+        </button>
+
+        <button
+          type="button"
+          id="desktop-nav-summary"
+          onclick="setActivePage('summary')"
+          class="py-3 border-b-2 border-transparent inline-flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
+        >
+          <svg class="w-4 h-4 nav-icon-colored shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>Summary</span>
+        </button>
+      </div>
+    </nav>
   </header>
 
   <!-- ======================================================================= -->
-  <!-- MAIN WORKSPACE (3 PAGES SWITCHED VIA BOTTOM PILL NAVBAR)                -->
+  <!-- MAIN WORKSPACE (3 PAGES SWITCHED VIA NAVIGATION BAR)                    -->
   <!-- ======================================================================= -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 main-bottom-clearance space-y-6">
+  <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 main-bottom-clearance md:pb-12">
 
     <!-- ===================================================================== -->
-    <!-- PAGE 1: HOME (PRODUCTION INFORMATION TO BE FILLED)                    -->
+    <!-- PAGE 1: HOME (PRODUCTION & CLIENT INFORMATION)                        -->
     <!-- ===================================================================== -->
-    <div id="page-home" class="space-y-6">
-      <!-- Project Metadata & Currency Bar -->
-      <section class="relative z-20 glass-card p-4 sm:p-5">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 items-end">
+    <div id="page-home" class="space-y-5">
+      <section class="relative z-20 glass-card p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-200/70 dark:border-white/10">
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+              Production Information
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+              Project, studio, and client metadata for your quotation
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onclick="clearProject()"
+            class="min-h-[38px] px-3.5 py-1.5 glass-btn-secondary text-xs font-semibold text-slate-700 dark:text-neutral-200 hover:text-rose-600 dark:hover:text-rose-400 inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Clear / Blank
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
           <!-- Project Name -->
-          <div class="lg:col-span-4">
+          <div class="lg:col-span-6">
             <label for="project-name" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
               Project Name
             </label>
             <input
               id="project-name"
               type="text"
-              placeholder="Your Project"
+              placeholder="e.g. Brand Campaign 2026"
               oninput="updateMeta('projectName', this.value)"
-              class="w-full h-10 glass-input px-3.5 text-sm font-medium text-left text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+              class="w-full h-11 glass-input px-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
             />
           </div>
 
           <!-- Brand / Studio Name -->
-          <div class="lg:col-span-3">
+          <div class="lg:col-span-6">
             <label for="studio-brand-name" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
-              Brand / Studio
+              Brand / Studio Name
             </label>
             <input
               id="studio-brand-name"
               type="text"
-              placeholder="Your Studio"
+              placeholder="e.g. ProdCalMY Studio"
               oninput="updateMeta('brandName', this.value)"
-              class="w-full h-10 glass-input px-3.5 text-sm font-medium text-left text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+              class="w-full h-11 glass-input px-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
             />
           </div>
 
           <!-- Client Name -->
-          <div class="lg:col-span-3">
+          <div class="lg:col-span-6">
             <label for="client-name" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
               Client Name
             </label>
             <input
               id="client-name"
               type="text"
-              placeholder="Your Client"
+              placeholder="e.g. Acme Corp Sdn Bhd"
               oninput="updateMeta('clientName', this.value)"
-              class="w-full h-10 glass-input px-3.5 text-sm font-medium text-left text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+              class="w-full h-11 glass-input px-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
             />
           </div>
 
-          <!-- Quote Reference -->
-          <div class="lg:col-span-2">
-            <label for="quote-number" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
-              Quote #
-            </label>
-            <input
-              id="quote-number"
-              type="text"
-              placeholder="Q-001"
-              oninput="updateMeta('quoteNumber', this.value)"
-              class="w-full h-10 glass-input px-3.5 text-sm font-medium text-left text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        <!-- Second Metadata Row: Package Name, Shoot Date, Currency, Clear -->
-        <div class="mt-3.5 pt-3.5 border-t border-slate-200/70 dark:border-white/10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 items-end">
           <!-- Package Name -->
-          <div class="lg:col-span-4">
+          <div class="lg:col-span-6">
             <label for="package-name" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
               Package Name
             </label>
             <input
               id="package-name"
               type="text"
-              placeholder="Your Package"
+              placeholder="e.g. Full-Day Commercial Production"
               oninput="updateMeta('packageName', this.value)"
-              class="w-full h-10 glass-input px-3.5 text-sm font-medium text-left text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+              class="w-full h-11 glass-input px-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+            />
+          </div>
+
+          <!-- Quote # -->
+          <div class="lg:col-span-4">
+            <label for="quote-number" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
+              Quote #
+            </label>
+            <input
+              id="quote-number"
+              type="text"
+              placeholder="e.g. Q-2026-001"
+              oninput="updateMeta('quoteNumber', this.value)"
+              class="w-full h-11 glass-input px-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
             />
           </div>
 
           <!-- Shoot Date (dd/mm/yyyy + Interactive Calendar Popover) -->
-          <div id="shoot-date-wrapper" class="relative lg:col-span-3">
+          <div id="shoot-date-wrapper" class="relative lg:col-span-5">
             <label for="shoot-date" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
               Shoot Date
             </label>
@@ -459,15 +533,14 @@
                 maxlength="10"
                 placeholder="dd/mm/yyyy"
                 oninput="handleShootDateTextInput(this)"
-                class="w-full h-10 glass-input pl-3.5 pr-10 text-sm font-medium text-left tabular-nums text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:tabular-nums placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                class="w-full h-11 glass-input pl-3.5 pr-11 text-sm font-medium tabular-nums text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
               />
               <button
                 type="button"
-                id="shoot-date-picker-btn"
                 onclick="toggleShootDatePopover(event)"
                 aria-label="Open calendar"
-                title="Choose Shoot Date"
-                class="absolute right-1.5 w-8 h-8 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10 text-slate-500 dark:text-neutral-300 flex items-center justify-center transition-colors cursor-pointer"
+                title="Select shoot date"
+                class="absolute right-1.5 w-8 h-8 rounded-lg hover:bg-sky-500/10 dark:hover:bg-white/10 text-slate-500 dark:text-neutral-300 flex items-center justify-center transition-colors cursor-pointer"
               >
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -481,25 +554,27 @@
             <!-- Interactive Calendar Popover -->
             <div
               id="shoot-date-popover"
-              class="hidden absolute left-0 sm:left-auto sm:right-0 top-full mt-2 z-50 w-72 glass-popover p-3.5"
+              class="hidden absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-72 z-50 glass-popover p-3.5 space-y-3"
             >
-              <div class="flex items-center justify-between mb-2.5">
+              <div class="flex items-center justify-between gap-2">
                 <button
                   type="button"
                   onclick="changeCalendarMonth(-1)"
                   aria-label="Previous month"
-                  class="w-8 h-8 glass-btn-secondary text-slate-600 dark:text-neutral-200 flex items-center justify-center cursor-pointer"
+                  class="w-8 h-8 rounded-lg glass-btn-secondary text-slate-600 dark:text-neutral-200 flex items-center justify-center cursor-pointer"
                 >
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                     <polyline points="15 18 9 12 15 6"></polyline>
                   </svg>
                 </button>
-                <div id="calendar-month-label" class="text-xs font-extrabold text-slate-900 dark:text-white tracking-tight"></div>
+                <div id="calendar-month-label" class="text-xs font-extrabold text-slate-900 dark:text-white">
+                  Month Year
+                </div>
                 <button
                   type="button"
                   onclick="changeCalendarMonth(1)"
                   aria-label="Next month"
-                  class="w-8 h-8 glass-btn-secondary text-slate-600 dark:text-neutral-200 flex items-center justify-center cursor-pointer"
+                  class="w-8 h-8 rounded-lg glass-btn-secondary text-slate-600 dark:text-neutral-200 flex items-center justify-center cursor-pointer"
                 >
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                     <polyline points="9 18 15 12 9 6"></polyline>
@@ -507,24 +582,30 @@
                 </button>
               </div>
 
-              <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500 mb-1">
-                <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+              <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase text-slate-400 dark:text-neutral-500">
+                <span>Su</span>
+                <span>Mo</span>
+                <span>Tu</span>
+                <span>We</span>
+                <span>Th</span>
+                <span>Fr</span>
+                <span>Sa</span>
               </div>
 
               <div id="calendar-days-grid" class="grid grid-cols-7 gap-1"></div>
 
-              <div class="mt-3 pt-2.5 border-t border-slate-200/70 dark:border-white/10 flex items-center justify-between text-xs">
+              <div class="pt-2 border-t border-slate-200/70 dark:border-white/10 flex items-center justify-between text-xs">
                 <button
                   type="button"
                   onclick="clearShootDate()"
-                  class="font-semibold text-slate-500 hover:text-rose-600 dark:text-neutral-400 dark:hover:text-rose-400 cursor-pointer"
+                  class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-rose-600 font-semibold cursor-pointer"
                 >
                   Clear
                 </button>
                 <button
                   type="button"
                   onclick="selectTodayShootDate()"
-                  class="font-bold text-sky-700 dark:text-pastel-300 hover:underline cursor-pointer"
+                  class="px-3 py-1 rounded-lg glass-cta-primary text-slate-950 font-bold cursor-pointer"
                 >
                   Today
                 </button>
@@ -540,7 +621,7 @@
             <select
               id="currency-select"
               onchange="updateCurrency(this.value)"
-              class="w-full h-10 glass-input px-3 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+              class="w-full h-11 glass-input px-3 text-sm font-bold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
             >
               <option value="MYR">MYR (RM)</option>
               <option value="USD">USD ($)</option>
@@ -549,154 +630,155 @@
               <option value="GBP">GBP (£)</option>
             </select>
           </div>
+        </div>
 
-          <!-- Clear / Blank Button -->
-          <div class="lg:col-span-2">
-            <button
-              type="button"
-              onclick="clearProject()"
-              title="Clear all fields to blank"
-              class="w-full h-10 px-3.5 text-xs font-semibold glass-btn-secondary text-slate-700 dark:text-neutral-200 hover:text-rose-600 dark:hover:text-rose-400 flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 6h18"></path>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-              Clear / Blank
-            </button>
-          </div>
+        <div class="mt-6 pt-4 border-t border-slate-200/70 dark:border-white/10 flex justify-end">
+          <button
+            type="button"
+            onclick="setActivePage('cost')"
+            class="min-h-[42px] px-5 py-2 glass-cta-primary text-slate-950 text-xs sm:text-sm font-extrabold inline-flex items-center gap-2 cursor-pointer"
+          >
+            <span>Next: Production Costs</span>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
         </div>
       </section>
     </div>
 
     <!-- ===================================================================== -->
-    <!-- PAGE 2: COST (3 SCOPE TABS: PRODUCTION | POST PRODUCTION | MISC)      -->
+    <!-- PAGE 2: COST (3 SEPARATED SCOPE TABS)                                 -->
     <!-- ===================================================================== -->
     <div id="page-cost" class="hidden space-y-5">
-      <!-- Scope Tabs Bar -->
-      <div class="glass-card p-1.5">
-        <div role="tablist" aria-label="Cost Scope Tabs" class="grid grid-cols-3 gap-1">
-          <button
-            type="button"
-            id="cost-tab-production"
-            onclick="setCostScopeTab('production')"
-            class="min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer"
-          >
-            Production
-          </button>
-          <button
-            type="button"
-            id="cost-tab-post"
-            onclick="setCostScopeTab('post')"
-            class="min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer"
-          >
-            Post Production
-          </button>
-          <button
-            type="button"
-            id="cost-tab-misc"
-            onclick="setCostScopeTab('misc')"
-            class="min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer"
-          >
-            Miscellaneous
-          </button>
-        </div>
+      <!-- Scope Tabs Bar: Production | Post Production | Miscellaneous -->
+      <div class="glass-card p-1.5 grid grid-cols-3 gap-1.5">
+        <button
+          type="button"
+          id="cost-tab-production"
+          onclick="setCostScopeTab('production')"
+          class="min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer"
+        >
+          Production
+        </button>
+        <button
+          type="button"
+          id="cost-tab-post"
+          onclick="setCostScopeTab('post')"
+          class="min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer"
+        >
+          Post Production
+        </button>
+        <button
+          type="button"
+          id="cost-tab-misc"
+          onclick="setCostScopeTab('misc')"
+          class="min-h-[40px] px-1.5 sm:px-3 py-2 text-[11px] sm:text-sm font-bold leading-tight text-center rounded-2xl transition-all cursor-pointer"
+        >
+          Miscellaneous
+        </button>
       </div>
 
-      <!-- Active Tab Cost Sections Container -->
-      <div id="cost-categories-container" class="space-y-4">
-        <!-- Dynamically rendered by renderCategories() -->
+      <!-- Dynamic Cost Builder Sections for Active Scope Tab -->
+      <div id="cost-categories-container" class="space-y-4"></div>
+
+      <!-- Next Step Action -->
+      <div class="flex items-center justify-between pt-1">
+        <button
+          type="button"
+          onclick="setActivePage('home')"
+          class="min-h-[40px] px-4 py-2 glass-btn-secondary text-xs font-bold text-slate-700 dark:text-neutral-200 inline-flex items-center gap-1.5 cursor-pointer"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Home</span>
+        </button>
+
+        <button
+          type="button"
+          onclick="setActivePage('summary')"
+          class="min-h-[42px] px-5 py-2 glass-cta-primary text-slate-950 text-xs sm:text-sm font-extrabold inline-flex items-center gap-2 cursor-pointer"
+        >
+          <span>Next: Summary &amp; Quote</span>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
       </div>
     </div>
 
     <!-- ===================================================================== -->
-    <!-- PAGE 3: SUMMARY (COST SUMMARY, PRICING STRATEGY & CLIENT QUOTATION)   -->
+    <!-- PAGE 3: SUMMARY, PRICING STRATEGY & CLIENT QUOTE ESTIMATE             -->
     <!-- ===================================================================== -->
-    <div id="page-summary" class="hidden space-y-6">
-      <!-- Cost Breakdown & Pricing Strategy Card -->
-      <section class="glass-card p-5 space-y-5">
-        <div class="flex items-center justify-between">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-neutral-300">
-            Cost &amp; Margin Summary
-          </h2>
+    <div id="page-summary" class="hidden space-y-5">
+      <!-- 1. Cost & Margin Summary + Pricing Strategy -->
+      <section class="glass-card p-5 sm:p-6 space-y-5">
+        <div class="flex items-center justify-between gap-3 pb-3.5 border-b border-slate-200/70 dark:border-white/10">
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+              Cost &amp; Margin Summary
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+              Internal cost breakdown and pricing strategy controls
+            </p>
+          </div>
           <span id="margin-health-badge" class="text-xs font-extrabold text-emerald-700 dark:text-emerald-400">
             0.0% Margin
           </span>
         </div>
 
-        <!-- Category Subtotals List (Post Production before Software) -->
-        <div class="space-y-2 text-sm">
-          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-400">
+        <!-- Category Subtotals (Post Production before Software) -->
+        <div class="glass-subcard p-4 space-y-2.5 text-xs sm:text-sm">
+          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-300">
             <span>Crew</span>
-            <span id="summary-crew" class="font-semibold tabular-nums text-slate-900 dark:text-neutral-100">RM 0.00</span>
+            <span id="summary-crew" class="font-bold tabular-nums text-slate-900 dark:text-white">RM 0.00</span>
           </div>
-          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-400">
+          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-300">
             <span>Equipment</span>
-            <span id="summary-gear" class="font-semibold tabular-nums text-slate-900 dark:text-neutral-100">RM 0.00</span>
+            <span id="summary-gear" class="font-bold tabular-nums text-slate-900 dark:text-white">RM 0.00</span>
           </div>
-          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-400">
+          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-300">
             <span>Post Production</span>
-            <span id="summary-post" class="font-semibold tabular-nums text-slate-900 dark:text-neutral-100">RM 0.00</span>
+            <span id="summary-post" class="font-bold tabular-nums text-slate-900 dark:text-white">RM 0.00</span>
           </div>
-          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-400">
+          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-300">
             <span>Software</span>
-            <span id="summary-software" class="font-semibold tabular-nums text-slate-900 dark:text-neutral-100">RM 0.00</span>
+            <span id="summary-software" class="font-bold tabular-nums text-slate-900 dark:text-white">RM 0.00</span>
           </div>
-          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-400">
+          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-300">
             <span>Expenses</span>
-            <span id="summary-travel" class="font-semibold tabular-nums text-slate-900 dark:text-neutral-100">RM 0.00</span>
+            <span id="summary-travel" class="font-bold tabular-nums text-slate-900 dark:text-white">RM 0.00</span>
           </div>
 
-          <div class="pt-2 border-t border-slate-200/70 dark:border-white/10 flex items-center justify-between font-semibold text-slate-800 dark:text-neutral-200">
+          <div class="pt-2.5 border-t border-slate-200/70 dark:border-white/10 flex items-center justify-between font-semibold text-slate-700 dark:text-neutral-200">
             <span>Direct Base Cost</span>
             <span id="summary-base-cost" class="tabular-nums">RM 0.00</span>
           </div>
 
-          <!-- Overhead Control -->
-          <div class="pt-2">
-            <div class="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
-              <label for="overhead-input">Studio Overhead / Contingency (%)</label>
-              <span id="summary-overhead-amount" class="tabular-nums text-slate-500 dark:text-neutral-400">+ RM 0.00</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <input
-                id="overhead-slider"
-                type="range"
-                min="0"
-                max="50"
-                step="1"
-                value="10"
-                oninput="updatePricingSetting('overheadPct', this.value)"
-                class="flex-1"
-              />
-              <div class="relative w-20">
-                <input
-                  id="overhead-input"
-                  type="number"
-                  min="0"
-                  max="200"
-                  step="1"
-                  value="10"
-                  placeholder="0"
-                  oninput="updatePricingSetting('overheadPct', this.value)"
-                  class="w-full h-10 glass-input pl-2.5 pr-6 text-right text-sm font-bold tabular-nums text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:text-right placeholder:tabular-nums placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
-                />
-                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">%</span>
-              </div>
-            </div>
+          <div class="flex items-center justify-between text-slate-600 dark:text-neutral-300">
+            <span>Studio Overhead</span>
+            <span id="summary-overhead-amount" class="font-semibold tabular-nums text-slate-800 dark:text-neutral-200">+ RM 0.00</span>
           </div>
 
-          <div class="pt-2.5 border-t border-slate-200/70 dark:border-white/10 flex items-center justify-between text-sm font-bold text-slate-900 dark:text-white">
+          <div class="pt-2.5 border-t border-slate-200/70 dark:border-white/10 flex items-center justify-between text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
             <span>Total Internal Cost</span>
             <span id="summary-total-cost" class="tabular-nums">RM 0.00</span>
           </div>
         </div>
 
-        <!-- Markup vs Margin Mode Switcher -->
-        <div class="pt-4 border-t border-slate-200/70 dark:border-white/10 space-y-3.5">
-          <div class="flex items-center justify-between gap-2">
-            <span class="text-xs font-bold text-slate-700 dark:text-neutral-200">Pricing Strategy</span>
-            <div class="inline-flex glass-segmented p-1">
+        <!-- Pricing Strategy Controls -->
+        <div class="space-y-4 pt-1">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">Pricing Strategy</h3>
+              <p id="mode-helper-text" class="text-xs text-slate-500 dark:text-neutral-400">Added on top of cost</p>
+            </div>
+
+            <div class="inline-flex glass-segmented p-0.5">
               <button
                 type="button"
                 id="mode-markup-btn"
@@ -711,29 +793,50 @@
                 onclick="setPricingMode('margin')"
                 class="px-3 py-1.5 text-xs font-bold transition-all cursor-pointer"
               >
-                Target Margin %
+                Margin %
               </button>
             </div>
           </div>
 
-          <!-- Profit Percentage Slider + Input -->
-          <div>
-            <div class="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1.5">
-              <label id="profit-pct-label" for="profit-pct-input">Markup Percentage (%)</label>
-              <span id="mode-helper-text" class="text-[11px] text-slate-400 dark:text-neutral-500">Added on top of cost</span>
+          <!-- Overhead % -->
+          <div class="glass-subcard p-3.5 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <label for="overhead-input" class="text-xs font-bold text-slate-700 dark:text-neutral-200">
+                Studio Overhead (%)
+              </label>
+              <div class="flex items-center gap-1.5">
+                <input
+                  id="overhead-input"
+                  type="number"
+                  min="0"
+                  max="200"
+                  step="1"
+                  value="10"
+                  oninput="updatePricingSetting('overheadPct', this.value)"
+                  class="w-16 h-8 glass-input px-2 text-right text-xs font-bold tabular-nums text-slate-900 dark:text-white focus:outline-none"
+                />
+                <span class="text-xs font-bold text-slate-400">%</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3">
-              <input
-                id="profit-pct-slider"
-                type="range"
-                min="0"
-                max="85"
-                step="1"
-                value="35"
-                oninput="updatePricingSetting('profitPct', this.value)"
-                class="flex-1"
-              />
-              <div class="relative w-20">
+            <input
+              id="overhead-slider"
+              type="range"
+              min="0"
+              max="50"
+              step="1"
+              value="10"
+              oninput="updatePricingSetting('overheadPct', this.value)"
+              class="w-full"
+            />
+          </div>
+
+          <!-- Markup / Target Margin % -->
+          <div class="glass-subcard p-3.5 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <label id="profit-pct-label" for="profit-pct-input" class="text-xs font-bold text-slate-700 dark:text-neutral-200">
+                Markup Percentage (%)
+              </label>
+              <div class="flex items-center gap-1.5">
                 <input
                   id="profit-pct-input"
                   type="number"
@@ -741,45 +844,40 @@
                   max="500"
                   step="1"
                   value="35"
-                  placeholder="0"
                   oninput="updatePricingSetting('profitPct', this.value)"
-                  class="w-full h-10 glass-input pl-2.5 pr-6 text-right text-sm font-bold tabular-nums text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:text-right placeholder:tabular-nums placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                  class="w-16 h-8 glass-input px-2 text-right text-xs font-bold tabular-nums text-slate-900 dark:text-white focus:outline-none"
                 />
-                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">%</span>
+                <span class="text-xs font-bold text-slate-400">%</span>
               </div>
             </div>
+            <input
+              id="profit-pct-slider"
+              type="range"
+              min="0"
+              max="85"
+              step="1"
+              value="35"
+              oninput="updatePricingSetting('profitPct', this.value)"
+              class="w-full"
+            />
           </div>
 
-          <!-- Optional Discount Section (0% to 50%) -->
-          <div class="pt-3 border-t border-slate-200/70 dark:border-white/10 space-y-2.5">
+          <!-- Optional Discount -->
+          <div class="glass-subcard p-3.5 space-y-2.5">
             <div class="flex items-center justify-between gap-2">
-              <label for="discount-toggle" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-neutral-200 cursor-pointer">
+              <label class="inline-flex items-center gap-2 cursor-pointer">
                 <input
                   id="discount-toggle"
                   type="checkbox"
                   onchange="toggleDiscount(this.checked)"
-                  class="w-4 h-4 rounded border-slate-300 text-pastel-500 focus:ring-pastel-400 cursor-pointer"
+                  class="w-4 h-4 rounded accent-sky-500 cursor-pointer"
                 />
-                <span>Apply Discount (0% &ndash; 50%)</span>
+                <span class="text-xs font-bold text-slate-700 dark:text-neutral-200">Client Discount</span>
               </label>
-              <span id="summary-discount-amount" class="text-xs font-bold tabular-nums text-rose-600 dark:text-rose-400">
-                - RM 0.00
-              </span>
-            </div>
 
-            <div id="discount-controls-body" class="space-y-1.5">
-              <div class="flex items-center gap-3">
-                <input
-                  id="discount-pct-slider"
-                  type="range"
-                  min="0"
-                  max="50"
-                  step="1"
-                  value="0"
-                  oninput="updatePricingSetting('discountPct', this.value)"
-                  class="flex-1"
-                />
-                <div class="relative w-20">
+              <div class="flex items-center gap-2">
+                <span id="summary-discount-amount" class="text-xs font-bold tabular-nums text-rose-600 dark:text-rose-400">- RM 0.00</span>
+                <div class="flex items-center gap-1">
                   <input
                     id="discount-pct-input"
                     type="number"
@@ -787,43 +885,51 @@
                     max="50"
                     step="1"
                     value="0"
-                    placeholder="0"
                     oninput="updatePricingSetting('discountPct', this.value)"
-                    class="w-full h-10 glass-input pl-2.5 pr-6 text-right text-sm font-bold tabular-nums text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:text-right placeholder:tabular-nums placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                    class="w-14 h-8 glass-input px-2 text-right text-xs font-bold tabular-nums text-slate-900 dark:text-white focus:outline-none"
                   />
-                  <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">%</span>
+                  <span class="text-xs font-bold text-slate-400">%</span>
                 </div>
               </div>
-              <p id="discount-status-note" class="text-[11px] text-slate-400 dark:text-neutral-500">
-                Unchecked &mdash; excluded from client quotation
-              </p>
             </div>
+            <input
+              id="discount-pct-slider"
+              type="range"
+              min="0"
+              max="50"
+              step="1"
+              value="0"
+              oninput="updatePricingSetting('discountPct', this.value)"
+              class="w-full"
+            />
+            <p id="discount-status-note" class="text-[11px] text-slate-500 dark:text-neutral-400">
+              Unchecked — excluded from client quotation
+            </p>
           </div>
 
-          <!-- Quote Rounding & Tax Controls -->
-          <div class="pt-3 border-t border-slate-200/70 dark:border-white/10 space-y-3">
-            <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-semibold text-slate-600 dark:text-neutral-300">Smart Quote Rounding</span>
+          <!-- Smart Quote Rounding & Tax / SST -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="glass-subcard p-3.5 flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-slate-700 dark:text-neutral-200">Round Quote</span>
               <div class="inline-flex glass-segmented p-0.5 text-xs">
-                <button type="button" data-round="1" onclick="setRoundingStep(1)" class="round-btn px-2.5 py-1 font-semibold cursor-pointer">Exact</button>
-                <button type="button" data-round="10" onclick="setRoundingStep(10)" class="round-btn px-2.5 py-1 font-semibold cursor-pointer">Nearest 10</button>
+                <button type="button" data-round="1" onclick="setRoundingStep(1)" class="round-btn px-2.5 py-1 font-semibold cursor-pointer">Off</button>
+                <button type="button" data-round="10" onclick="setRoundingStep(10)" class="round-btn px-2.5 py-1 font-semibold cursor-pointer">10</button>
                 <button type="button" data-round="50" onclick="setRoundingStep(50)" class="round-btn px-2.5 py-1 font-semibold cursor-pointer">50</button>
                 <button type="button" data-round="100" onclick="setRoundingStep(100)" class="round-btn px-2.5 py-1 font-semibold cursor-pointer">100</button>
               </div>
             </div>
 
-            <div class="flex items-center justify-between gap-3">
-              <label for="tax-toggle" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-neutral-300 cursor-pointer">
+            <div class="glass-subcard p-3.5 flex items-center justify-between gap-2">
+              <label class="inline-flex items-center gap-2 cursor-pointer">
                 <input
                   id="tax-toggle"
                   type="checkbox"
                   onchange="toggleTax(this.checked)"
-                  class="w-4 h-4 rounded border-slate-300 text-pastel-500 focus:ring-pastel-400 cursor-pointer"
+                  class="w-4 h-4 rounded accent-sky-500 cursor-pointer"
                 />
-                <span>Include Tax / SST</span>
+                <span class="text-xs font-bold text-slate-700 dark:text-neutral-200">Tax / SST</span>
               </label>
-
-              <div class="relative w-24">
+              <div class="flex items-center gap-1">
                 <input
                   id="tax-rate-input"
                   type="number"
@@ -831,36 +937,41 @@
                   max="50"
                   step="0.5"
                   value="8"
-                  placeholder="0"
                   oninput="updatePricingSetting('taxRate', this.value)"
-                  class="w-full h-10 glass-input pl-2.5 pr-6 text-right text-sm font-bold tabular-nums text-slate-900 dark:text-white placeholder:text-sm placeholder:font-normal placeholder:text-right placeholder:tabular-nums placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+                  class="w-16 h-8 glass-input px-2 text-right text-xs font-bold tabular-nums text-slate-900 dark:text-white focus:outline-none"
                 />
-                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">%</span>
+                <span class="text-xs font-bold text-slate-400">%</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- CLIENT QUOTE ESTIMATE & QUOTATION GENERATOR -->
-      <section class="glass-hero p-5 sm:p-6 text-slate-900 dark:text-white">
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+      <!-- 2. Client Quote Estimate (Borderless Title + Hero Totals + Generate Modal CTA) -->
+      <section class="glass-hero p-5 sm:p-6 space-y-5">
+        <div>
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">
+            Client Quote Estimate
+          </h2>
+          <p id="final-quote-subtitle" class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+            Excludes tax &bull; Pre-tax subtotal RM 0.00
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h2 class="text-xs font-bold uppercase tracking-wider text-sky-800 dark:text-pastel-300">
-              Client Quote Estimate
-            </h2>
-            <div id="final-quote-total" class="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums text-slate-900 dark:text-white">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-neutral-500">
+              Recommended Client Quote
+            </div>
+            <div id="final-quote-total" class="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums text-slate-900 dark:text-white mt-1">
               RM 0.00
             </div>
-            <p id="final-quote-subtitle" class="mt-1 text-xs text-slate-600 dark:text-neutral-300">
-              Excludes tax &bull; Pre-tax subtotal RM 0.00
-            </p>
           </div>
 
           <button
             type="button"
             onclick="openQuoteModal()"
-            class="shrink-0 min-h-[42px] px-5 py-2.5 glass-cta-primary text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer"
+            class="w-full sm:w-auto min-h-[46px] px-6 py-2.5 glass-cta-primary text-slate-950 text-xs sm:text-sm font-extrabold inline-flex items-center justify-center gap-2 cursor-pointer"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -868,97 +979,91 @@
               <line x1="16" y1="13" x2="8" y2="13"></line>
               <line x1="16" y1="17" x2="8" y2="17"></line>
             </svg>
-            Client Quote
+            <span>Preview &amp; Generate Quotation</span>
           </button>
         </div>
 
-        <!-- Key Financial Metrics Subcards -->
-        <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <div class="glass-subcard p-3.5">
-            <div class="text-[11px] font-medium text-slate-600 dark:text-neutral-400">Net Profit</div>
+        <!-- Profit & Margin Metrics -->
+        <div class="grid grid-cols-3 gap-2.5">
+          <div class="glass-subcard p-3">
+            <div class="text-[11px] font-semibold text-slate-500 dark:text-neutral-400">Net Profit</div>
             <div id="final-net-profit" class="mt-0.5 text-sm sm:text-base font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400">
               RM 0.00
             </div>
           </div>
-          <div class="glass-subcard p-3.5">
-            <div class="text-[11px] font-medium text-slate-600 dark:text-neutral-400">Profit Margin</div>
+
+          <div class="glass-subcard p-3">
+            <div class="text-[11px] font-semibold text-slate-500 dark:text-neutral-400">Profit Margin</div>
             <div id="final-profit-margin" class="mt-0.5 text-sm sm:text-base font-extrabold tabular-nums text-slate-900 dark:text-white">
               0.0%
             </div>
           </div>
-          <div class="glass-subcard p-3.5">
-            <div class="text-[11px] font-medium text-slate-600 dark:text-neutral-400">Effective Markup</div>
-            <div id="final-markup-pct" class="mt-0.5 text-sm sm:text-base font-extrabold tabular-nums text-sky-900 dark:text-pastel-300">
+
+          <div class="glass-subcard p-3">
+            <div class="text-[11px] font-semibold text-slate-500 dark:text-neutral-400">Markup</div>
+            <div id="final-markup-pct" class="mt-0.5 text-sm sm:text-base font-extrabold tabular-nums text-slate-900 dark:text-white">
               0.0%
             </div>
           </div>
         </div>
 
-        <!-- Quote Composition Stacked Bar -->
-        <div class="mt-4">
-          <div class="flex items-center justify-between text-[11px] text-slate-600 dark:text-neutral-300 mb-1.5">
+        <!-- Quote Composition Breakdown Bar -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-neutral-400">
             <span>Quote Composition</span>
-            <span id="composition-ratio-text">Cost 0% / Profit 0%</span>
+            <span id="composition-ratio-text" class="tabular-nums">Cost 0% / Profit 0%</span>
           </div>
-          <div class="h-2.5 w-full rounded-full bg-slate-200/80 dark:bg-black/45 p-0.5 overflow-hidden flex border border-slate-300/70 dark:border-white/10">
-            <div id="bar-crew" class="h-full bg-sky-600 dark:bg-pastel-400 rounded-l-full transition-all duration-300" style="width: 0%" title="Crew"></div>
-            <div id="bar-gear" class="h-full bg-sky-400 transition-all duration-300" style="width: 0%" title="Equipment"></div>
-            <div id="bar-post" class="h-full bg-teal-500 transition-all duration-300" style="width: 0%" title="Post Production"></div>
-            <div id="bar-software" class="h-full bg-cyan-500 transition-all duration-300" style="width: 0%" title="Software"></div>
-            <div id="bar-travel" class="h-full bg-amber-400 transition-all duration-300" style="width: 0%" title="Expenses"></div>
-            <div id="bar-overhead" class="h-full bg-slate-500 dark:bg-neutral-500 transition-all duration-300" style="width: 0%" title="Overhead"></div>
-            <div id="bar-profit" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%" title="Net Profit"></div>
-            <div id="bar-tax" class="h-full bg-rose-400 rounded-r-full transition-all duration-300" style="width: 0%" title="Tax"></div>
+
+          <div class="h-2.5 w-full rounded-full bg-slate-200/80 dark:bg-white/10 overflow-hidden flex">
+            <div id="bar-crew" style="width: 0%" class="bg-sky-400 transition-all duration-300" title="Crew"></div>
+            <div id="bar-gear" style="width: 0%" class="bg-indigo-400 transition-all duration-300" title="Equipment"></div>
+            <div id="bar-post" style="width: 0%" class="bg-teal-400 transition-all duration-300" title="Post Production"></div>
+            <div id="bar-software" style="width: 0%" class="bg-cyan-400 transition-all duration-300" title="Software"></div>
+            <div id="bar-travel" style="width: 0%" class="bg-amber-400 transition-all duration-300" title="Expenses"></div>
+            <div id="bar-overhead" style="width: 0%" class="bg-slate-400 transition-all duration-300" title="Overhead"></div>
+            <div id="bar-profit" style="width: 0%" class="bg-emerald-400 transition-all duration-300" title="Net Profit"></div>
+            <div id="bar-tax" style="width: 0%" class="bg-rose-400 transition-all duration-300" title="Tax"></div>
           </div>
-          <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-slate-600 dark:text-neutral-400">
-            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-600 dark:bg-pastel-400"></span>Crew</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-400"></span>Equipment</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-teal-500"></span>Post Production</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-cyan-500"></span>Software</span>
+
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-semibold text-slate-500 dark:text-neutral-400">
+            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-400"></span>Crew</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-400"></span>Gear</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-teal-400"></span>Post</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-cyan-400"></span>Software</span>
             <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400"></span>Expenses</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-500 dark:bg-neutral-500"></span>Overhead</span>
-            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Profit</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-400"></span>Overhead</span>
+            <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Profit</span>
             <span id="legend-tax" class="hidden inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-400"></span>Tax</span>
           </div>
         </div>
       </section>
 
-      <!-- Support / Donate CTA Banner (Buy Me a Coffee) -->
-      <section class="glass-card p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="text-center sm:text-left space-y-1">
-          <h2 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
-            Thank you for using ProdCalMY
-          </h2>
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-neutral-300">
-            Your support keeps this estimator free, private, and continuously improving for creators.
+      <!-- 3. Support / Buy Me a Coffee Card -->
+      <section class="glass-card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">Support ProdCalMY</h3>
+          <p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+            Find this estimator helpful for your shoots? Fuel future updates with a coffee.
           </p>
         </div>
-
         <a
           href="https://buymeacoffee.com/locknain"
           target="_blank"
           rel="noopener noreferrer"
-          class="shrink-0 min-h-[42px] px-5 py-2.5 glass-cta-primary text-slate-950 font-extrabold text-xs sm:text-sm inline-flex items-center justify-center gap-2"
+          class="min-h-[40px] px-4 py-2 glass-btn-secondary text-xs font-extrabold text-amber-800 dark:text-amber-300 inline-flex items-center gap-2 shrink-0"
         >
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-            <line x1="6" y1="1" x2="6" y2="4"></line>
-            <line x1="10" y1="1" x2="10" y2="4"></line>
-            <line x1="14" y1="1" x2="14" y2="4"></line>
-          </svg>
-          Donate &bull; Buy Me a Coffee
+          <span>&#9749; Buy Me a Coffee</span>
         </a>
       </section>
     </div>
   </main>
 
   <!-- ======================================================================= -->
-  <!-- FLOATING BOTTOM PILL NAVBAR (SAFE ZONE POSITIONED)                      -->
+  <!-- FLOATING BOTTOM PILL NAVBAR (MOBILE VIEW ONLY, SAFE ZONE POSITIONED)    -->
   <!-- ======================================================================= -->
   <nav
-    aria-label="Primary Navigation"
-    class="fixed inset-x-0 bottom-0 z-40 pointer-events-none flex justify-center px-4 bottom-nav-safe-zone"
+    aria-label="Mobile Navigation"
+    class="md:hidden fixed inset-x-0 bottom-0 z-40 pointer-events-none flex justify-center px-4 bottom-nav-safe-zone"
   >
     <div class="pointer-events-auto bottom-nav-pill p-1.5 inline-flex items-center gap-1.5">
       <!-- Page 1: Home -->
@@ -1632,7 +1737,7 @@
     const STORAGE_KEY = 'prodcalmy_calculator_v6';
     const LEARNED_RATES_KEY = 'prodcalmy_learned_rates_v1';
 
-    // Curated Malaysian (MYR) Production Rate & Gear Database (#1)
+    // Curated Malaysian (MYR) Production Rate & Gear Database
     const BUILTIN_SMART_RATES = {
       crew: [
         { desc: 'Director', unit: 'day', rate: 1800, qty: 1 },
@@ -1657,25 +1762,34 @@
         { desc: 'Sony FX6 Cinema Camera (Rental)', unit: 'rent', rate: 550, qty: 1 },
         { desc: 'Sony A7S III Body', unit: 'owned', rate: 15499, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
         { desc: 'Sony A7 IV Hybrid Body', unit: 'owned', rate: 10499, qty: 1, lifespanYears: 3, estEvents: 20, eventPeriod: 'year' },
+        { desc: 'Sony Alpha a6700 Body', unit: 'owned', rate: 7099, qty: 1, lifespanYears: 3, estEvents: 20, eventPeriod: 'year' },
         { desc: 'Canon EOS C70 Cinema', unit: 'owned', rate: 22999, qty: 1, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
         { desc: 'Canon EOS R5 C', unit: 'owned', rate: 18999, qty: 1, lifespanYears: 3, estEvents: 15, eventPeriod: 'year' },
         { desc: 'RED Komodo 6K Package', unit: 'rent', rate: 950, qty: 1 },
         { desc: 'ARRI Alexa Mini LF Package', unit: 'rent', rate: 2800, qty: 1 },
         { desc: 'Blackmagic Pocket Cinema 6K Pro', unit: 'owned', rate: 11299, qty: 1, lifespanYears: 3, estEvents: 15, eventPeriod: 'year' },
+        { desc: 'Sony FE 20-70mm f/4 G', unit: 'owned', rate: 5399, qty: 1, lifespanYears: 4, estEvents: 20, eventPeriod: 'year' },
         { desc: 'Sony FE 24-70mm f/2.8 GM II', unit: 'owned', rate: 9599, qty: 1, lifespanYears: 4, estEvents: 20, eventPeriod: 'year' },
         { desc: 'Sony FE 70-200mm f/2.8 GM II', unit: 'owned', rate: 11499, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
         { desc: 'Sony FE 16-35mm f/2.8 GM II', unit: 'owned', rate: 9999, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'Sigma 70-200mm f/2.8 DG DN Sports', unit: 'owned', rate: 7483, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'Tamron 11-20mm f/2.8 Di III-A RXD', unit: 'owned', rate: 3399, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'Viltrox AF 85mm f/2.0 EVO FE', unit: 'owned', rate: 1099, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'Viltrox AF 9mm f/2.8 Air E', unit: 'owned', rate: 799, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
         { desc: 'DJI RS 4 Pro Gimbal Combo', unit: 'owned', rate: 4599, qty: 1, lifespanYears: 3, estEvents: 20, eventPeriod: 'year' },
         { desc: 'DJI Mavic 3 Pro Cine Drone', unit: 'owned', rate: 16999, qty: 1, lifespanYears: 3, estEvents: 12, eventPeriod: 'year' },
         { desc: 'DJI Inspire 3 Cinema Drone', unit: 'rent', rate: 1800, qty: 1 },
         { desc: 'Aputure LS 600d Pro COB Light', unit: 'owned', rate: 7990, qty: 1, lifespanYears: 4, estEvents: 15, eventPeriod: 'year' },
         { desc: 'Aputure Amaran 300c RGB Light', unit: 'owned', rate: 2699, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
         { desc: 'Nanlite Forza 300B II Kit', unit: 'owned', rate: 4199, qty: 1, lifespanYears: 3, estEvents: 16, eventPeriod: 'year' },
+        { desc: 'Sony HVL-F60RM2 Wireless Flash', unit: 'owned', rate: 2099, qty: 1, lifespanYears: 4, estEvents: 18, eventPeriod: 'year' },
         { desc: 'DJI Mic 2 Wireless Dual Kit', unit: 'owned', rate: 1549, qty: 1, lifespanYears: 3, estEvents: 24, eventPeriod: 'year' },
         { desc: 'Rode Wireless PRO Dual System', unit: 'owned', rate: 1799, qty: 1, lifespanYears: 3, estEvents: 24, eventPeriod: 'year' },
         { desc: 'Sennheiser MKH 416 Shotgun Mic', unit: 'owned', rate: 4699, qty: 1, lifespanYears: 5, estEvents: 20, eventPeriod: 'year' },
         { desc: 'Atomos Ninja V+ 5" Monitor', unit: 'owned', rate: 2999, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
-        { desc: 'Hollyland Mars 4K Wireless Video', unit: 'owned', rate: 2699, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' }
+        { desc: 'Hollyland Mars 4K Wireless Video', unit: 'owned', rate: 2699, qty: 1, lifespanYears: 3, estEvents: 18, eventPeriod: 'year' },
+        { desc: 'Ulanzi & Coman Zero Y Carbon Tripod', unit: 'owned', rate: 1599, qty: 1, lifespanYears: 4, estEvents: 20, eventPeriod: 'year' },
+        { desc: 'ASUS ProArt PA329CRV 32" 4K Monitor', unit: 'owned', rate: 3441, qty: 1, lifespanYears: 4, estEvents: 24, eventPeriod: 'year' }
       ],
       post: [
         { desc: 'Offline & Online Video Editing (Main Film)', unit: 'project', rate: 1500, qty: 1 },
@@ -1761,7 +1875,7 @@
       const q = String(queryText || '').trim().toLowerCase();
       if (q.length < 2) return null;
 
-      // 1. Prioritize user's own saved/learned entries (#2)
+      // 1. Prioritize user's own saved/learned entries
       const learnedMap = learnedRatesStore[catId] || {};
       const learnedList = Object.values(learnedMap);
       let exactLearned = learnedList.find(entry => entry.desc.toLowerCase() === q);
@@ -1773,7 +1887,7 @@
         return { ...partialLearned, sourceLabel: 'Your Saved Rate' };
       }
 
-      // 2. Fallback to built-in Malaysian production library (#1)
+      // 2. Fallback to built-in Malaysian production library
       const builtinList = BUILTIN_SMART_RATES[catId] || [];
       let match = builtinList.find(entry => entry.desc.toLowerCase() === q)
         || builtinList.find(entry => entry.desc.toLowerCase().startsWith(q))
@@ -1910,6 +2024,7 @@
       ['home', 'cost', 'summary'].forEach(p => {
         const pageEl = document.getElementById(`page-${p}`);
         const navBtn = document.getElementById(`nav-pill-${p}`);
+        const desktopNavBtn = document.getElementById(`desktop-nav-${p}`);
         const isCurrent = p === activePage;
         if (pageEl) {
           pageEl.classList.toggle('hidden', !isCurrent);
@@ -1917,6 +2032,19 @@
         if (navBtn) {
           navBtn.classList.toggle('bottom-nav-item-active', isCurrent);
           navBtn.setAttribute('aria-current', isCurrent ? 'page' : 'false');
+        }
+        if (desktopNavBtn) {
+          desktopNavBtn.className = `py-3 border-b-2 inline-flex items-center gap-2 text-sm font-bold transition-all cursor-pointer ${
+            isCurrent
+              ? 'border-sky-600 dark:border-pastel-400 text-slate-900 dark:text-white'
+              : 'border-transparent text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white'
+          }`;
+          const iconEl = desktopNavBtn.querySelector('.nav-icon-colored');
+          if (iconEl) {
+            iconEl.classList.toggle('text-sky-600', isCurrent);
+            iconEl.classList.toggle('dark:text-pastel-400', isCurrent);
+          }
+          desktopNavBtn.setAttribute('aria-current', isCurrent ? 'page' : 'false');
         }
       });
 
@@ -2473,6 +2601,7 @@
 
     function renderCategories() {
       const container = document.getElementById('cost-categories-container');
+      if (!container) return;
       const allowedIds = COST_TAB_CATEGORIES[activeCostTab] || ['crew', 'gear'];
       const visibleCategories = CATEGORIES.filter(cat => allowedIds.includes(cat.id));
 
