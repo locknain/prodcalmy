@@ -781,10 +781,11 @@
 
         <button
           type="button"
-          onclick="setActivePage('summary')"
+          id="cost-next-btn"
+          onclick="handleCostNextStep()"
           class="min-h-[42px] px-5 py-2 glass-cta-primary text-slate-950 text-xs sm:text-sm font-extrabold inline-flex items-center gap-2 cursor-pointer"
         >
-          <span>Next: Quote &amp; Pricing</span>
+          <span id="cost-next-btn-label">Next: Post Production</span>
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
@@ -2449,7 +2450,30 @@
         }`;
       });
 
+      const nextLabelEl = document.getElementById('cost-next-btn-label');
+      if (nextLabelEl) {
+        if (activeCostTab === 'production') {
+          nextLabelEl.textContent = 'Next: Post Production';
+        } else if (activeCostTab === 'post') {
+          nextLabelEl.textContent = 'Next: Miscellaneous';
+        } else {
+          nextLabelEl.textContent = 'Next: Quote & Pricing';
+        }
+      }
+
       renderCategories();
+    }
+
+    function handleCostNextStep() {
+      if (activeCostTab === 'production') {
+        setCostScopeTab('post');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (activeCostTab === 'post') {
+        setCostScopeTab('misc');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        setActivePage('summary');
+      }
     }
 
     function uid() {
