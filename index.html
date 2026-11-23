@@ -723,13 +723,13 @@
 
           <button
             type="button"
-            id="delete-saved-package-btn"
-            onclick="deleteSelectedSavedPackage()"
-            title="Delete selected package"
-            aria-label="Delete selected package"
-            class="hidden h-10 px-3 glass-btn-secondary text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 text-xs font-bold shrink-0 cursor-pointer"
+            id="clear-saved-package-btn"
+            onclick="clearPrefilledPackage()"
+            title="Clear pre-filled package items"
+            aria-label="Clear pre-filled package items"
+            class="hidden h-10 px-3 glass-btn-secondary text-slate-700 dark:text-neutral-200 hover:text-rose-600 dark:hover:text-rose-400 text-xs font-bold shrink-0 cursor-pointer"
           >
-            Delete
+            Clear
           </button>
         </div>
       </div>
@@ -2045,7 +2045,7 @@
 
     function renderSavedPackagesDropdown() {
       const selectEl = document.getElementById('saved-packages-select');
-      const delBtn = document.getElementById('delete-saved-package-btn');
+      const clearBtn = document.getElementById('clear-saved-package-btn');
       if (!selectEl) return;
 
       const optionsHtml = [
@@ -2060,16 +2060,16 @@
       ].join('');
 
       selectEl.innerHTML = optionsHtml;
-      if (delBtn) {
-        delBtn.classList.toggle('hidden', !selectedSavedPackageId);
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', !selectedSavedPackageId);
       }
     }
 
     function applySelectedSavedPackage(pkgId) {
       selectedSavedPackageId = pkgId || '';
-      const delBtn = document.getElementById('delete-saved-package-btn');
-      if (delBtn) {
-        delBtn.classList.toggle('hidden', !selectedSavedPackageId);
+      const clearBtn = document.getElementById('clear-saved-package-btn');
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', !selectedSavedPackageId);
       }
       if (!pkgId) return;
 
@@ -2104,16 +2104,18 @@
       showToast(`Loaded package "${pkg.name}"`, true);
     }
 
-    function deleteSelectedSavedPackage() {
-      if (!selectedSavedPackageId) return;
-      const pkg = savedPackagesStore.find(p => p.id === selectedSavedPackageId);
-      savedPackagesStore = savedPackagesStore.filter(p => p.id !== selectedSavedPackageId);
+    function clearPrefilledPackage() {
+      lastBackupState = JSON.parse(JSON.stringify(state));
       selectedSavedPackageId = '';
-      saveSavedPackages();
+      state.items = createBlankCategoryItems();
+      state.meta.packageName = '';
+
+      saveState();
+      syncInputsFromState();
       renderSavedPackagesDropdown();
-      if (pkg) {
-        showToast(`Deleted package "${pkg.name}"`);
-      }
+      renderCategories();
+      updateSummaryUI();
+      showToast('Cleared pre-filled package items.', true);
     }
 
     // =========================================================================
