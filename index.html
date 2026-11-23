@@ -693,6 +693,52 @@
           </button>
         </div>
       </section>
+
+      <!-- Supabase Cloud Sync Section -->
+      <section class="glass-card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
+              Cloud Sync (Supabase)
+            </h3>
+            <span id="supabase-status-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 dark:bg-white/10 text-slate-600 dark:text-neutral-300">
+              Not Connected
+            </span>
+          </div>
+          <p id="supabase-status-subtext" class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+            Connect your free Supabase project to automatically sync quotes, packages &amp; rates across all devices.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+          <button
+            type="button"
+            id="supabase-sync-now-btn"
+            onclick="syncSupabaseNow()"
+            class="hidden min-h-[40px] px-3.5 py-2 glass-btn-secondary text-xs font-bold text-slate-800 dark:text-neutral-100 inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Sync Now</span>
+          </button>
+
+          <button
+            type="button"
+            onclick="openSupabaseModal()"
+            class="min-h-[40px] px-4 py-2 glass-btn-secondary text-xs font-extrabold text-sky-700 dark:text-pastel-300 inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+            </svg>
+            <span id="supabase-configure-label">Configure Supabase</span>
+          </button>
+        </div>
+      </section>
     </div>
 
     <!-- ===================================================================== -->
@@ -1603,6 +1649,131 @@
   </div>
 
   <!-- ======================================================================= -->
+  <!-- SUPABASE CLOUD BACKEND CONFIGURATION MODAL                              -->
+  <!-- ======================================================================= -->
+  <div
+    id="supabase-modal"
+    class="hidden fixed inset-0 z-50 bg-slate-950/55 backdrop-blur-md p-3 sm:p-6 overflow-y-auto flex items-center justify-center"
+    onclick="if (event.target === this) closeSupabaseModal()"
+  >
+    <div class="w-full max-w-lg glass-card p-5 sm:p-6 space-y-4 my-auto">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
+            Connect Supabase Backend
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">
+            Sync your active workspace, saved packages, and learned rates to PostgreSQL.
+          </p>
+        </div>
+        <button
+          type="button"
+          onclick="closeSupabaseModal()"
+          aria-label="Close Supabase modal"
+          class="w-8 h-8 rounded-full glass-btn-secondary text-slate-500 hover:text-rose-600 flex items-center justify-center cursor-pointer"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label for="supabase-url-input" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1">
+            Project URL
+          </label>
+          <input
+            id="supabase-url-input"
+            type="url"
+            placeholder="https://your-project-id.supabase.co"
+            class="w-full h-10 glass-input px-3 text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label for="supabase-anon-input" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1">
+            Anon / Public API Key
+          </label>
+          <input
+            id="supabase-anon-input"
+            type="text"
+            placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            class="w-full h-10 glass-input px-3 text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label for="supabase-workspace-input" class="block text-xs font-semibold text-slate-600 dark:text-neutral-300 mb-1">
+            Workspace Sync ID <span class="font-normal text-slate-400">(use same ID on other devices)</span>
+          </label>
+          <input
+            id="supabase-workspace-input"
+            type="text"
+            placeholder="default-studio"
+            class="w-full h-10 glass-input px-3 text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <!-- One-Time Table SQL Setup Helper -->
+      <div class="glass-subcard p-3 space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-[11px] font-bold text-slate-700 dark:text-neutral-200">
+            1. Run this SQL once in Supabase &rarr; SQL Editor:
+          </span>
+          <button
+            type="button"
+            onclick="copySupabaseSQL()"
+            class="px-2.5 py-1 rounded-lg glass-btn-secondary text-[11px] font-bold text-sky-700 dark:text-pastel-300 cursor-pointer"
+          >
+            Copy SQL
+          </button>
+        </div>
+        <pre id="supabase-sql-snippet" class="text-[10px] leading-relaxed font-mono bg-white/80 dark:bg-black/40 border border-slate-200/70 dark:border-white/10 rounded-xl p-2.5 overflow-x-auto text-slate-700 dark:text-neutral-300 select-all">create table if not exists public.prodcalmy_workspaces (
+  id text primary key,
+  state jsonb not null default '{}'::jsonb,
+  saved_packages jsonb not null default '[]'::jsonb,
+  learned_rates jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+alter table public.prodcalmy_workspaces enable row level security;
+create policy "Allow anon access" on public.prodcalmy_workspaces
+  for all using (true) with check (true);</pre>
+      </div>
+
+      <div class="pt-1 flex flex-wrap items-center justify-between gap-2">
+        <button
+          type="button"
+          id="supabase-disconnect-btn"
+          onclick="disconnectSupabase()"
+          class="hidden h-10 px-3.5 rounded-xl text-rose-600 hover:bg-rose-500/10 font-bold text-xs cursor-pointer"
+        >
+          Disconnect
+        </button>
+
+        <div class="flex items-center gap-2 ml-auto">
+          <button
+            type="button"
+            onclick="closeSupabaseModal()"
+            class="h-10 px-4 glass-btn-secondary text-slate-700 dark:text-neutral-200 font-bold text-xs cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onclick="saveAndConnectSupabase()"
+            class="h-10 px-5 glass-cta-primary text-slate-950 font-extrabold text-xs cursor-pointer"
+          >
+            Connect &amp; Sync
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
   <!-- FOOTER                                                                  -->
   <!-- ======================================================================= -->
   <footer class="border-t border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-black/30 py-5 px-4 mt-8">
@@ -1619,7 +1790,8 @@
     </div>
   </footer>
 
-  <!-- jsPDF for Direct Client-Side PDF Generation -->
+  <!-- Supabase JS Client v2 & jsPDF -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <!-- ======================================================================= -->
@@ -2044,6 +2216,263 @@
     const STORAGE_KEY = 'prodcalmy_calculator_v6';
     const LEARNED_RATES_KEY = 'prodcalmy_learned_rates_v1';
     const SAVED_PACKAGES_KEY = 'prodcalmy_saved_packages_v1';
+    const SUPABASE_CONFIG_KEY = 'prodcalmy_supabase_cfg_v1';
+
+    let supabaseClient = null;
+    let supabaseSyncTimer = null;
+    let isSupabaseSyncing = false;
+
+    function loadSupabaseConfig() {
+      try {
+        const raw = localStorage.getItem(SUPABASE_CONFIG_KEY);
+        if (!raw) return { url: '', anonKey: '', workspaceId: 'default-studio' };
+        const parsed = JSON.parse(raw);
+        return {
+          url: (parsed.url || '').trim(),
+          anonKey: (parsed.anonKey || '').trim(),
+          workspaceId: (parsed.workspaceId || 'default-studio').trim() || 'default-studio'
+        };
+      } catch (e) {
+        return { url: '', anonKey: '', workspaceId: 'default-studio' };
+      }
+    }
+
+    let supabaseConfig = loadSupabaseConfig();
+
+    function saveSupabaseConfig() {
+      try {
+        localStorage.setItem(SUPABASE_CONFIG_KEY, JSON.stringify(supabaseConfig));
+      } catch (e) {
+        console.warn('Unable to save Supabase config:', e);
+      }
+    }
+
+    function updateSupabaseStatusUI(status, detailText = '') {
+      const badgeEl = document.getElementById('supabase-status-badge');
+      const subtextEl = document.getElementById('supabase-status-subtext');
+      const syncBtn = document.getElementById('supabase-sync-now-btn');
+      const cfgLabel = document.getElementById('supabase-configure-label');
+      const disconnectBtn = document.getElementById('supabase-disconnect-btn');
+
+      if (!badgeEl) return;
+
+      if (status === 'connected') {
+        badgeEl.textContent = 'Connected';
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400';
+        if (subtextEl) subtextEl.textContent = detailText || `Synced with workspace "${supabaseConfig.workspaceId}"`;
+        if (syncBtn) syncBtn.classList.remove('hidden');
+        if (cfgLabel) cfgLabel.textContent = 'Settings';
+        if (disconnectBtn) disconnectBtn.classList.remove('hidden');
+      } else if (status === 'syncing') {
+        badgeEl.textContent = 'Syncing...';
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-700 dark:text-pastel-300';
+        if (subtextEl && detailText) subtextEl.textContent = detailText;
+      } else if (status === 'error') {
+        badgeEl.textContent = 'Sync Error';
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-700 dark:text-rose-400';
+        if (subtextEl) subtextEl.textContent = detailText || 'Check your Supabase URL, Anon Key, or table policy.';
+        if (syncBtn) syncBtn.classList.remove('hidden');
+        if (cfgLabel) cfgLabel.textContent = 'Settings';
+        if (disconnectBtn) disconnectBtn.classList.remove('hidden');
+      } else {
+        badgeEl.textContent = 'Not Connected';
+        badgeEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 dark:bg-white/10 text-slate-600 dark:text-neutral-300';
+        if (subtextEl) subtextEl.textContent = 'Connect your free Supabase project to automatically sync quotes, packages & rates across all devices.';
+        if (syncBtn) syncBtn.classList.add('hidden');
+        if (cfgLabel) cfgLabel.textContent = 'Configure Supabase';
+        if (disconnectBtn) disconnectBtn.classList.add('hidden');
+      }
+    }
+
+    function initSupabaseClient() {
+      if (!supabaseConfig.url || !supabaseConfig.anonKey || !window.supabase || !window.supabase.createClient) {
+        supabaseClient = null;
+        updateSupabaseStatusUI('disconnected');
+        return false;
+      }
+      try {
+        supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
+        updateSupabaseStatusUI('connected', `Connected to workspace "${supabaseConfig.workspaceId}"`);
+        return true;
+      } catch (err) {
+        console.error('Supabase init error:', err);
+        supabaseClient = null;
+        updateSupabaseStatusUI('error', 'Invalid Supabase URL or Anon Key.');
+        return false;
+      }
+    }
+
+    function openSupabaseModal() {
+      const modal = document.getElementById('supabase-modal');
+      if (!modal) return;
+      const urlInput = document.getElementById('supabase-url-input');
+      const anonInput = document.getElementById('supabase-anon-input');
+      const wsInput = document.getElementById('supabase-workspace-input');
+      if (urlInput) urlInput.value = supabaseConfig.url || '';
+      if (anonInput) anonInput.value = supabaseConfig.anonKey || '';
+      if (wsInput) wsInput.value = supabaseConfig.workspaceId || 'default-studio';
+      modal.classList.remove('hidden');
+    }
+
+    function closeSupabaseModal() {
+      const modal = document.getElementById('supabase-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copySupabaseSQL() {
+      const sqlEl = document.getElementById('supabase-sql-snippet');
+      if (!sqlEl) return;
+      const text = sqlEl.textContent || '';
+      const tempArea = document.createElement('textarea');
+      tempArea.value = text;
+      tempArea.style.position = 'fixed';
+      tempArea.style.opacity = '0';
+      document.body.appendChild(tempArea);
+      tempArea.select();
+      try {
+        document.execCommand('copy');
+        showToast('SQL setup query copied to clipboard!');
+      } catch (e) {
+        showToast('Please select and copy the SQL text manually.');
+      }
+      document.body.removeChild(tempArea);
+    }
+
+    async function saveAndConnectSupabase() {
+      const url = (document.getElementById('supabase-url-input')?.value || '').trim().replace(/\/+$/, '');
+      const anonKey = (document.getElementById('supabase-anon-input')?.value || '').trim();
+      const workspaceId = (document.getElementById('supabase-workspace-input')?.value || '').trim() || 'default-studio';
+
+      if (!url || !anonKey) {
+        showToast('Please enter both your Supabase Project URL and Anon Key.');
+        return;
+      }
+
+      supabaseConfig = { url, anonKey, workspaceId };
+      saveSupabaseConfig();
+
+      if (initSupabaseClient()) {
+        closeSupabaseModal();
+        await pullOrSeedSupabaseWorkspace(true);
+      }
+    }
+
+    function disconnectSupabase() {
+      supabaseConfig = { url: '', anonKey: '', workspaceId: 'default-studio' };
+      saveSupabaseConfig();
+      supabaseClient = null;
+      updateSupabaseStatusUI('disconnected');
+      closeSupabaseModal();
+      showToast('Disconnected from Supabase.');
+    }
+
+    function scheduleSupabasePush() {
+      if (!supabaseClient) return;
+      if (supabaseSyncTimer) clearTimeout(supabaseSyncTimer);
+      supabaseSyncTimer = setTimeout(() => {
+        pushWorkspaceToSupabase(false);
+      }, 1200);
+    }
+
+    async function pushWorkspaceToSupabase(showFeedback = false) {
+      if (!supabaseClient || isSupabaseSyncing) return;
+      isSupabaseSyncing = true;
+      updateSupabaseStatusUI('syncing', 'Saving changes to Supabase...');
+
+      try {
+        const { error } = await supabaseClient
+          .from('prodcalmy_workspaces')
+          .upsert({
+            id: supabaseConfig.workspaceId || 'default-studio',
+            state,
+            saved_packages: savedPackagesStore,
+            learned_rates: learnedRatesStore,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'id' });
+
+        if (error) throw error;
+
+        const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        updateSupabaseStatusUI('connected', `Synced (${supabaseConfig.workspaceId}) at ${nowTime}`);
+        if (showFeedback) showToast('Synced to Supabase cloud!');
+      } catch (err) {
+        console.error('Supabase push failed:', err);
+        updateSupabaseStatusUI('error', err.message || 'Could not write to prodcalmy_workspaces table.');
+        if (showFeedback) showToast('Supabase sync failed. Check SQL table setup.');
+      } finally {
+        isSupabaseSyncing = false;
+      }
+    }
+
+    async function pullOrSeedSupabaseWorkspace(showFeedback = false) {
+      if (!supabaseClient || isSupabaseSyncing) return;
+      isSupabaseSyncing = true;
+      updateSupabaseStatusUI('syncing', 'Fetching workspace from Supabase...');
+
+      try {
+        const wsId = supabaseConfig.workspaceId || 'default-studio';
+        const { data, error } = await supabaseClient
+          .from('prodcalmy_workspaces')
+          .select('*')
+          .eq('id', wsId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data && data.state && Object.keys(data.state).length > 0) {
+          const def = createDefaultState();
+          const remoteMeta = { ...def.meta, ...(data.state.meta || {}) };
+          remoteMeta.shootDate = normalizeShootDateToDDMMYYYY(remoteMeta.shootDate);
+
+          state = {
+            ...def,
+            ...data.state,
+            meta: remoteMeta,
+            collapsed: { ...def.collapsed, ...(data.state.collapsed || {}) },
+            items: { ...def.items, ...(data.state.items || {}) },
+            pricing: { ...def.pricing, ...(data.state.pricing || {}) }
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+          if (Array.isArray(data.saved_packages)) {
+            savedPackagesStore = data.saved_packages;
+            localStorage.setItem(SAVED_PACKAGES_KEY, JSON.stringify(savedPackagesStore));
+          }
+          if (data.learned_rates && typeof data.learned_rates === 'object') {
+            learnedRatesStore = data.learned_rates;
+            localStorage.setItem(LEARNED_RATES_KEY, JSON.stringify(learnedRatesStore));
+          }
+
+          syncInputsFromState();
+          renderSavedPackagesDropdown();
+          renderCategories();
+          updateSummaryUI();
+
+          const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          updateSupabaseStatusUI('connected', `Pulled (${wsId}) at ${nowTime}`);
+          if (showFeedback) showToast('Loaded latest data from Supabase!');
+        } else {
+          // First time connecting this workspace ID: seed cloud with current local data
+          isSupabaseSyncing = false;
+          await pushWorkspaceToSupabase(showFeedback);
+          return;
+        }
+      } catch (err) {
+        console.error('Supabase pull failed:', err);
+        updateSupabaseStatusUI('error', err.message || 'Table prodcalmy_workspaces not found.');
+        if (showFeedback) showToast('Could not connect to table. Run the SQL snippet first.');
+      } finally {
+        isSupabaseSyncing = false;
+      }
+    }
+
+    async function syncSupabaseNow() {
+      if (!supabaseClient) {
+        openSupabaseModal();
+        return;
+      }
+      await pullOrSeedSupabaseWorkspace(true);
+    }
 
     function loadSavedPackages() {
       try {
@@ -2065,6 +2494,7 @@
       } catch (e) {
         console.warn('Unable to save packages:', e);
       }
+      scheduleSupabasePush();
     }
 
     function openSavePackageModal() {
@@ -2368,6 +2798,7 @@
       } catch (e) {
         // Ignore storage quota issues
       }
+      scheduleSupabasePush();
     }
 
     function recordLearnedRate(catId, item) {
@@ -2882,6 +3313,7 @@
       } catch (e) {
         console.warn('Unable to save state to localStorage:', e);
       }
+      scheduleSupabasePush();
     }
 
     let state = loadState();
@@ -4069,6 +4501,7 @@
         closeSavePackageModal();
         closeRenamePackageModal();
         closePWAGuideModal();
+        closeSupabaseModal();
       }
     });
 
@@ -4812,6 +5245,9 @@
       setCostScopeTab(activeCostTab);
       setActivePage('home');
       updateSummaryUI();
+      if (initSupabaseClient()) {
+        pullOrSeedSupabaseWorkspace(false);
+      }
     }
 
     if (document.readyState === 'loading') {
